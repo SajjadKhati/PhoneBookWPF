@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Mapping;
 using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Data.Entity.ModelConfiguration;
 using DataAccess.EntityModule.Class.Configuration;
@@ -10,7 +11,14 @@ using DataAccess.EntityModule.Class.Entity;
 using DataAccess.EntityModule.Class.Configuration.Class;
 using DataAccess.EntityModule.Class.Configuration.Interface;
 using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Infrastructure.MappingViews;
 using DataAccess.ReflectionModule;
+using DataAccess.EntityModule.Class.Initializer;
+using System.Xml.Serialization;
+using System.Xml;
+using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace DataAccess.EntityModule.Class
 {
@@ -31,6 +39,24 @@ namespace DataAccess.EntityModule.Class
     public class PhoneBookDbContext : DbContext
     {
         /// <summary>
+        /// DbSet اي از موجوديت Person<br/><br/>
+        /// براي استفاده از قابليت lazy loading يا بارگذاري تنبل ، يعني زماني اطلاعات از ديتابيس لود بشود که درخواست و دسترسي اي به آن انجام شده باشد ، از virtual استفاده شد .
+        /// </summary>
+        public virtual DbSet<PersonEntity> PersonEntities { get; set; }
+
+
+        /// <summary>
+        /// DbSet اي از موجوديت Province يا استان<br/><br/>
+        /// چون Navigation Property ئه مربوط به اين موجوديت ، درون هيچ موجوديت ديگه نبود ،
+        /// پس براي ايجاد کلاس مربوط به اين موجوديت ، شيِ DbSet اي از اين موجوديت را در اين کلاس قرار داديم .
+        /// همچنين بخاطر lazyloading ، بصورت virtual تعريف شد .
+        /// </summary>
+        public virtual DbSet<ProvinceEntity> ProvinceEntities { get; set; }
+
+
+
+
+        /// <summary>
         /// اين متد سازنده ، که يکي از اورلودهاي متد سازنده ي پدرش که پارامتري بنام nameOrConnectionString که از نوع رشته هست را فراخواني ميکند ،
         /// اگر در ابتداي مقداري که به عنوان رشته اش ميدهيم ، عبارت "name=" را بنويسيم ، ميرود در فايل App.Config _در پروژه هاي وب ، نام متفاوت دارد_ اي که
         /// که درون پروژه ي اي که بصورت پيش فرض اجرا ميشود ، دنبال تگِ connectionStrings اي که مقدار name اش ، برابر با مقداري که در اين متد سازنده داريم ، ميگردد .<br/><br/>
@@ -43,7 +69,35 @@ namespace DataAccess.EntityModule.Class
         /// </summary>
         public PhoneBookDbContext() : base("name=PhoneBookDbContext")
         {
+            Database.SetInitializer(new PhoneBookDatabaseInitializer());
+        }
 
+
+        /// <summary>
+        /// کارهای اولیه سازی را برای پایگاه داده در
+        /// <see cref="T:System.Threading.Tasks.Task" />
+        /// و نخ جدیدی انجام میدهد .<br/>
+        /// کارهای اولیه سازی مانند ایجاد پایگاه داده جدید یا ساخته شدن Mapping View برای پایگاه داده .
+        /// </summary>
+        /// <param name="force">
+        /// مشخص میکند که آیا حتی اگر قبلا هم یکبار این متد اجرا شد و کارهای اولیه سازی پایگاه داده انجام شد ، آیا مجددا هم اجرا شود یا نه .<br/>
+        /// زمانی مقدار true بدهید که در حین اینکه برنامه تان در حال اجرا هست و قبلا این متد را فراخوانی کرده بودید ، اما بعد از آن ، فرضا پایگاه داده تان حذف شد و میخواهید این متد را
+        /// برای ایجاد کردنِ مجدد پایگاه داده ، فراخوانی کنید یا سناریوهایی از این دست .
+        /// </param>
+        /// <returns></returns>
+        public async Task InitializeDatabaseAsync(bool force = false)
+        {
+            /// چون عملیات Initialize ، یک عملیات طولانی مدت هست و حتی فقط اگر بخواهد ساخت Mapping View را هم انجام دهد ، ممکن است که در حد ثانیه ،
+            /// یا در حد چند ثانیه طول بکشد ، چه برسد به زمانی که بخواهد پایگاه داده ای را ایجاد کند که بسیار بیشتر طول میکشد ، بنابراین از متد Task.Factory.StartNew
+            /// استفاده کردیم تا بتوانیم با مقدار TaskCreationOptions.LongRunning ، طولانی مدت بودن عملیات را اعلام و مشخص کنیم .
+            ///
+            /// اگر مقدار TaskCreationOptions.LongRunning برای این متد مشخص شود ، زمان بند وظیفه ، ممکن است اشاره کند که برای Task ،
+            ///  یک نخ اضافی تر ممکن است لازم باشد تا فرآیند پیشرفت نخ های دیگر در صف thread-pool محلی را مسدود یا کندتر نکند .
+            /// 
+            /// البته هر چند در زمان ساخت دیتابیس ، چون چندان وابسته به محاسبات پردازنده نیست ، تفاوت خاصی نکند اما در زمان ساخت Mapping View چون وابسته به محاسبات نسبی
+            /// در پردازنده هست ، در سیستم های با پردازنده با تعداد هسته ی خیلی کم ، ممکن است که تنظیم کردن TaskCreationOptions.LongRunning ، تفاوتی را
+            /// در عملکرد و کارایی برنامه ، ایجاد کند .
+            await Task.Factory.StartNew(() => this.Database.Initialize(force), TaskCreationOptions.LongRunning);
         }
 
 
@@ -140,22 +194,5 @@ namespace DataAccess.EntityModule.Class
         }
 
 
-
-
-        /// <summary>
-        /// DbSet اي از موجوديت Person<br/><br/>
-        /// براي استفاده از قابليت lazy loading يا بارگذاري تنبل ، يعني زماني اطلاعات از ديتابيس لود بشود که درخواست و دسترسي اي به آن انجام شده باشد ، از virtual استفاده شد .
-        /// </summary>
-        public virtual DbSet<PersonEntity> PersonEntities { get; set; }
-
-
-        /// <summary>
-        /// DbSet اي از موجوديت Province يا استان<br/><br/>
-        /// چون Navigation Property ئه مربوط به اين موجوديت ، درون هيچ موجوديت ديگه نبود ،
-        /// پس براي ايجاد کلاس مربوط به اين موجوديت ، شيِ DbSet اي از اين موجوديت را در اين کلاس قرار داديم .
-        /// همچنين بخاطر lazyloading ، بصورت virtual تعريف شد .
-        /// </summary>
-        public virtual DbSet<ProvinceEntity> ProvinceEntities { get; set; }
     }
-
 }

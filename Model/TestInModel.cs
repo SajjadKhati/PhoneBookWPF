@@ -10,10 +10,10 @@ namespace Model
 {
     public class TestInModel
     {
-        public void Test()
+        public async Task Test()
         {
             TestInDataAccess testInDataAccess = new TestInDataAccess();
-            testInDataAccess.Test();
+            await testInDataAccess.Test();
         }
     }
 }

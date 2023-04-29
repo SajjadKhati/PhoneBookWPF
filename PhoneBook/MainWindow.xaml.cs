@@ -26,10 +26,12 @@ namespace PhoneBook
             InitializeComponent();
         }
 
-        private void ButtonBase_Click(object sender, RoutedEventArgs e)
+        private async void ButtonBase_Click(object sender, RoutedEventArgs e)
         {
             TestInViewModel testInViewModel = new TestInViewModel();
-            testInViewModel.Test();
+            await testInViewModel.Test();
+
+            //MessageBox.Show("Task Completed");
         }
 
 

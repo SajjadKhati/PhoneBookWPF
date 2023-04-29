@@ -1,6 +1,11 @@
-﻿using System.Reflection;
+﻿using DataAccess.EntityModule.Class;
+using DataAccess.EntityModule.Class.PreGeneratedView;
+using System.Data.Entity.Infrastructure.MappingViews;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+[assembly: DbMappingViewCacheType(typeof(PhoneBookDbContext), typeof(PhoneBookDbMappingViewCache))]
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information

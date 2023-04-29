@@ -9,10 +9,10 @@ namespace ViewModel
 {
     public class TestInViewModel
     {
-        public void Test()
+        public async Task Test()
         {
             TestInModel testInModel = new TestInModel();
-            testInModel.Test();
+            await testInModel.Test();
         }
     }
 }
