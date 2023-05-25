@@ -79,19 +79,24 @@
     <Compile Include="EntityModule\Class\PreGeneratedView\EntityMappingViewInfoWrapper.cs" />
     <Compile Include="EntityModule\Class\PreGeneratedView\MappingViewGenerator.cs" />
     <Compile Include="EntityModule\Class\PreGeneratedView\PhoneBookDbMappingViewCache.cs" />
+    <Compile Include="EntityModule\Class\Repository.cs" />
+    <Compile Include="EntityModule\Interface\IGetAllAsync.cs" />
+    <Compile Include="EntityModule\Interface\IInitializeDatabaseAsync.cs" />
+    <Compile Include="EntityModule\Interface\IQueryEagerLoading.cs" />
+    <Compile Include="EntityModule\Interface\IRepository.cs" />
+    <Compile Include="EntityModule\Interface\IRepositoryAsyncBase.cs" />
+    <Compile Include="EntityModule\Interface\IRepositoryBase.cs" />
+    <Compile Include="EntityModule\Interface\ISaveChangesAsync.cs" />
     <Compile Include="ExceptionModule\ExceptionMessage.cs" />
     <Compile Include="ReflectionModule\TypeUtility.cs" />
     <Compile Include="SerializationModule\XmlDataSerializer.cs" />
-    <Compile Include="TestInDataAccess.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="EntityModule\Interface\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>

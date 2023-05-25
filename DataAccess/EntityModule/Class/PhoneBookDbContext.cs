@@ -73,32 +73,6 @@ namespace DataAccess.EntityModule.Class
         }
 
 
-        /// <summary>
-        /// کارهای اولیه سازی را برای پایگاه داده در
-        /// <see cref="T:System.Threading.Tasks.Task" />
-        /// و نخ جدیدی انجام میدهد .<br/>
-        /// کارهای اولیه سازی مانند ایجاد پایگاه داده جدید یا ساخته شدن Mapping View برای پایگاه داده .
-        /// </summary>
-        /// <param name="force">
-        /// مشخص میکند که آیا حتی اگر قبلا هم یکبار این متد اجرا شد و کارهای اولیه سازی پایگاه داده انجام شد ، آیا مجددا هم اجرا شود یا نه .<br/>
-        /// زمانی مقدار true بدهید که در حین اینکه برنامه تان در حال اجرا هست و قبلا این متد را فراخوانی کرده بودید ، اما بعد از آن ، فرضا پایگاه داده تان حذف شد و میخواهید این متد را
-        /// برای ایجاد کردنِ مجدد پایگاه داده ، فراخوانی کنید یا سناریوهایی از این دست .
-        /// </param>
-        /// <returns></returns>
-        public async Task InitializeDatabaseAsync(bool force = false)
-        {
-            /// چون عملیات Initialize ، یک عملیات طولانی مدت هست و حتی فقط اگر بخواهد ساخت Mapping View را هم انجام دهد ، ممکن است که در حد ثانیه ،
-            /// یا در حد چند ثانیه طول بکشد ، چه برسد به زمانی که بخواهد پایگاه داده ای را ایجاد کند که بسیار بیشتر طول میکشد ، بنابراین از متد Task.Factory.StartNew
-            /// استفاده کردیم تا بتوانیم با مقدار TaskCreationOptions.LongRunning ، طولانی مدت بودن عملیات را اعلام و مشخص کنیم .
-            ///
-            /// اگر مقدار TaskCreationOptions.LongRunning برای این متد مشخص شود ، زمان بند وظیفه ، ممکن است اشاره کند که برای Task ،
-            ///  یک نخ اضافی تر ممکن است لازم باشد تا فرآیند پیشرفت نخ های دیگر در صف thread-pool محلی را مسدود یا کندتر نکند .
-            /// 
-            /// البته هر چند در زمان ساخت دیتابیس ، چون چندان وابسته به محاسبات پردازنده نیست ، تفاوت خاصی نکند اما در زمان ساخت Mapping View چون وابسته به محاسبات نسبی
-            /// در پردازنده هست ، در سیستم های با پردازنده با تعداد هسته ی خیلی کم ، ممکن است که تنظیم کردن TaskCreationOptions.LongRunning ، تفاوتی را
-            /// در عملکرد و کارایی برنامه ، ایجاد کند .
-            await Task.Factory.StartNew(() => this.Database.Initialize(force), TaskCreationOptions.LongRunning);
-        }
 
 
         /// <summary>
@@ -172,7 +146,7 @@ namespace DataAccess.EntityModule.Class
 
             Type iEntityConfigurationType = typeof(IEntityConfigurationBase);
             /// متغيير entityConfigurationTypes ، انواع کلاس هايي که اينترفيس IEntityConfigurationBase را پياده سازي ميکند را ذخيره ميکند .
-            List<Type> entityConfigurationTypes =
+            IList<Type> entityConfigurationTypes =
                 TypeUtility.GetTypesImplementingInterface(iEntityConfigurationType, iEntityConfigurationType);
             if (entityConfigurationTypes == null || entityConfigurationTypes.Count < 1)
                 return null;

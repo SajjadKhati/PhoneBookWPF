@@ -29,7 +29,7 @@ namespace DataAccess.ReflectionModule
         /// <exception cref="ArgumentNullException">
         ///  هیچ کدام از پارامترهای این متد نباید null ارسال شوند وگرنه این استثناء پرتاب میشود .
         /// </exception>
-        public static List<Type> GetTypesImplementingInterface(Type typeInsideAssembly, Type interfaceType)
+        public static IList<Type> GetTypesImplementingInterface(Type typeInsideAssembly, Type interfaceType)
         {
             /// اگر پارامتر ارسالیِ typeInsideAssembly ، مقدار null ارسال شود ، سمت راست عملگر ?? که استثنای ArgumentNullException هست ، پرتاب میشود و
             /// برنامه متوقف میشود وگرنه مقدار این متغییر ، مجددا درون خود همان متغییر ریخته میشود .
@@ -69,6 +69,33 @@ namespace DataAccess.ReflectionModule
                 })?.ToList();
 
             return typesImplementingInterface;
+        }
+
+
+
+        public static IList<PropertyInfo> GetVirtualPropertiesFromType(Type type)
+        {
+            type = type ?? throw new ArgumentNullException(nameof(type), ExceptionMessage.argumentNullExceptionMessage);
+
+            PropertyInfo[] allPropertiesInsideType = type.GetProperties();
+            List<PropertyInfo> virtualPropertiesInsideType = allPropertiesInsideType?.Where((PropertyInfo propertyInfo) =>
+            {
+                bool? isVirtualProperty = propertyInfo.GetMethod?.IsVirtual;
+                return (isVirtualProperty != null) ? isVirtualProperty.Value : false;
+            }).ToList();
+
+            return virtualPropertiesInsideType;
+        }
+
+
+        public static object GetPropertyValueFromType(Type type, string publicPropertyName, object instance)
+        {
+            type = type ?? throw new ArgumentNullException(nameof (type), ExceptionMessage.argumentNullExceptionMessage);
+            publicPropertyName = publicPropertyName ?? throw new ArgumentNullException(nameof(publicPropertyName), 
+                ExceptionMessage.argumentNullExceptionMessage);
+            instance = instance ?? throw new ArgumentNullException(nameof(instance), ExceptionMessage.argumentNullExceptionMessage);
+
+            return type.GetProperty(publicPropertyName)?.GetValue(instance);
         }
 
 
