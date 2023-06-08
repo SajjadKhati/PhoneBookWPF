@@ -41,8 +41,8 @@ namespace DataAccess.ReflectionModule
 
             /// اسمبلیِ (شامل همه ی مشخصات کلاس ها و اینترفیس ها و استراکچر و اینام هایی که در پروژه) ای که آن نوعِ داده شده در آن تعریف شد را برمیگرداند .
             /// 
-            /// مثلا اگر نوع typeInsideAssembly ، از نوع اینترفیسِ IEntityConfigurationBase باشد ، اسمبلیِ مربوط به پروژه و فایل dll ای-
-            /// که اینترفیسِ IEntityConfigurationBase درونش تعریف شد ، یعنی همه ی اطلاعات مربوط به کلاس ها و اینترفیس ها و ... ای که در پروژه و لایه ی DataAccess و -
+            /// مثلا اگر نوع typeInsideAssembly ، از نوع اینترفیسِ IEntityConfigurationAggregate باشد ، اسمبلیِ مربوط به پروژه و فایل dll ای-
+            /// که اینترفیسِ IEntityConfigurationAggregate درونش تعریف شد ، یعنی همه ی اطلاعات مربوط به کلاس ها و اینترفیس ها و ... ای که در پروژه و لایه ی DataAccess و -
             /// و در فایل DataAccess.dll تعریف شد را برمیگرداند .
             Assembly typeAssembly = typeInsideAssembly.Assembly;
             /// همه ی انواع (شامل کلاس و اینترفیس و اینام و استراکچر و ...) را برمیگرداند .

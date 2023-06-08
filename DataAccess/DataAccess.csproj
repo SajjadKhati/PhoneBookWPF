@@ -84,8 +84,8 @@
     <Compile Include="EntityModule\Interface\IInitializeDatabaseAsync.cs" />
     <Compile Include="EntityModule\Interface\IQueryEagerLoading.cs" />
     <Compile Include="EntityModule\Interface\IRepository.cs" />
-    <Compile Include="EntityModule\Interface\IRepositoryAsyncBase.cs" />
-    <Compile Include="EntityModule\Interface\IRepositoryBase.cs" />
+    <Compile Include="EntityModule\Interface\IRepositoryAsyncAggregate.cs" />
+    <Compile Include="EntityModule\Interface\IRepositoryAggregate.cs" />
     <Compile Include="EntityModule\Interface\ISaveChangesAsync.cs" />
     <Compile Include="ExceptionModule\ExceptionMessage.cs" />
     <Compile Include="ReflectionModule\TypeUtility.cs" />

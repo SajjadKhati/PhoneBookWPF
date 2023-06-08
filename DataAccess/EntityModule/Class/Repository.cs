@@ -16,7 +16,7 @@ using DataAccess.EntityModule.Class.Entity;
 
 namespace DataAccess.EntityModule.Class
 {
-    public class Repository<TNonQueryEntity> : IRepositoryBase<TNonQueryEntity> where TNonQueryEntity : class
+    public class Repository<TNonQueryEntity> : IRepositoryAggregate<TNonQueryEntity> where TNonQueryEntity : class
     {
         private readonly DbContext _context;
 

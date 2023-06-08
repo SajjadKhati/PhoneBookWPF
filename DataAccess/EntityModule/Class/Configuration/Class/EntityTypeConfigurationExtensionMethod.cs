@@ -14,7 +14,7 @@ namespace DataAccess.EntityModule.Class.Configuration.Class
     /// <summary>
     /// کلاس ExtensionMethod ای هست برای نوعِ جنریکِ کلاسِ EntityTypeConfiguration
     /// که میتواند در کلاس هایی که اینترفیسِ
-    /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationBase" />
+    /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationAggregate" />
     /// را پیاده سازی میکنند ، مورد استفاده قرار گیرد .
     /// </summary>
     internal static class EntityTypeConfigurationExtensionMethod

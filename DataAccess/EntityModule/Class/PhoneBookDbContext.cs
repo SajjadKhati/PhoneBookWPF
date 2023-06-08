@@ -81,7 +81,7 @@ namespace DataAccess.EntityModule.Class
         /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            /// پيکربندي هايي که توسط fluent api ها ، در کلاس هايي که اينترفيس IEntityConfigurationBase را پياده سازي ميکنند ، انجام داديم را روي ديتابيس مان اِعمال ميکنند .
+            /// پيکربندي هايي که توسط fluent api ها ، در کلاس هايي که اينترفيس IEntityConfigurationAggregate را پياده سازي ميکنند ، انجام داديم را روي ديتابيس مان اِعمال ميکنند .
             this.AddEntityConfiguration(modelBuilder.Configurations);
 
             base.OnModelCreating(modelBuilder);
@@ -90,33 +90,33 @@ namespace DataAccess.EntityModule.Class
 
         /// <summary>
         /// تنظيماتي که در کلاس هايي که اينترفيس
-        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationBase" />
+        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationAggregate" />
         /// را براي پيکربندي ديتابيس ، پياده سازي کردند را به شيِ ConfigurationRegistrar اضافه ميکند .
         /// </summary>
         /// <param name="configurationRegister">
         ///  شيِ
         /// <see cref="T:System.Data.Entity.ModelConfiguration.Configuration.ConfigurationRegistrar" />
         /// اي که بايد تنظيماتي که در کلاس هايي که اينترفيسِ
-        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationBase" />
+        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationAggregate" />
         /// پياده سازي شدند را به آن اضافه کرد .
         /// </param>
         private void AddEntityConfiguration(ConfigurationRegistrar configurationRegister)
         {
-            /// ليستي از شي کلاس هايي که اينترفيس IEntityConfigurationBase را پياده سازي کردند را در زمان اجراي برنامه و توسط Reflection برميگرداند .
-            List<IEntityConfigurationBase> entityConfigurations = this.CreateEntityConfigurations();
+            /// ليستي از شي کلاس هايي که اينترفيس IEntityConfigurationAggregate را پياده سازي کردند را در زمان اجراي برنامه و توسط Reflection برميگرداند .
+            List<IEntityConfigurationAggregate> entityConfigurations = this.CreateEntityConfigurations();
             if (entityConfigurations == null)
                 return;
 
-            /// توسط کلاس Facade اي که براي ارتباط با کلاس هايي هست که اينترفيس IEntityConfigurationBase را پياده سازي کردند ، -
+            /// توسط کلاس Facade اي که براي ارتباط با کلاس هايي هست که اينترفيس IEntityConfigurationAggregate را پياده سازي کردند ، -
             /// از اين کلاس ها براي پيکربندي ديتابيس استفاده ميکنيم . اما در ادامه بايد اين پيکربندي را براي اِعمال در ديتابيس ، به شيِ configurationRegister اضافه کنيم .
             EntityConfigurationFacade entityConfigurationFacade = new EntityConfigurationFacade(entityConfigurations);
             entityConfigurationFacade.SetEntityConfigurations();
 
             /// پيکربندي انجام شده را براي اِعمال در ديتابيس مان ، به شيِ configurationRegister اضافه ميکنيم تا EF ، اين تنظيمات را روي ديتابيس مان اِعمال کند .
-            foreach (IEntityConfigurationBase currentEntityConfiguration in entityConfigurations)
+            foreach (IEntityConfigurationAggregate currentEntityConfiguration in entityConfigurations)
             {
                 ///  دقت شود که موقع کمپايل ، مثلا در آيتم و يا ايندکس صفر ام از ليست entityConfigurations که شيِ PersonEntityConfiguration ولي -
-                /// ولي نوع داده اي اش از نوع اينترفيس IEntityConfigurationBase هست ؛ اين نوع اينترفيس را بصورت ضمني ، به نوع PersonEntityConfiguration  -
+                /// ولي نوع داده اي اش از نوع اينترفيس IEntityConfigurationAggregate هست ؛ اين نوع اينترفيس را بصورت ضمني ، به نوع PersonEntityConfiguration  -
                 /// نميتواند تبديل کند . و بخاطر همين ، خطاي زمان کمپايل ميگيرد .
                 /// 
                 /// از طرفي خودمان هم نميتوانيم صريحا به نوع PersonEntityConfiguration تبديل کنيم .
@@ -129,11 +129,11 @@ namespace DataAccess.EntityModule.Class
 
         /// <summary>
         /// ليستي از شي ها از کلاس هايي که اينترفيس
-        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationBase" />
+        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationAggregate" />
         /// را پياده سازي کردند را برميگرداند .
         /// </summary>
         /// <returns></returns>
-        private List<IEntityConfigurationBase> CreateEntityConfigurations()
+        private List<IEntityConfigurationAggregate> CreateEntityConfigurations()
         {
             /// ظرفيت اوليه يا همان capacity براي اين ليست را به مقدار 20 تا عضو بصورت پيش فرض تعيين کرديم براي اينکه تا زماني که آيتم ها به اين مقدار نرسيدند ، -
             /// آرايه ي جديدي در List در نظر نگيرد تا اعضاشان را مجددا واردش کند تا مرتبه ي زماني o(n) را برايش صرف کند . هر چند در اين حجم کوچک ، تاثير قابل مشاهده اي ندارد .
@@ -142,10 +142,10 @@ namespace DataAccess.EntityModule.Class
             /// مقدار capacity مان ، 2 برابر ميشود . يعني اولين بار 0 هست و دومين بار 1 و سومين بار 2 و چهارمين بار 4 و پنجمين بار 8 و ششمين بار 16 و ... ميشود .
             /// در هر بار هم که مقدار capacity تغيير ميکند ، همه ي آيتم هاي آرايه ي جاري در ليست را به آرايه ي جديدي منتقل ميکند که مرتبه ي زماني o(n) را در پي دارد .
             int listCapacity = 20;
-            List<IEntityConfigurationBase> entityConfigurations = new List<IEntityConfigurationBase>(listCapacity);
+            List<IEntityConfigurationAggregate> entityConfigurations = new List<IEntityConfigurationAggregate>(listCapacity);
 
-            Type iEntityConfigurationType = typeof(IEntityConfigurationBase);
-            /// متغيير entityConfigurationTypes ، انواع کلاس هايي که اينترفيس IEntityConfigurationBase را پياده سازي ميکند را ذخيره ميکند .
+            Type iEntityConfigurationType = typeof(IEntityConfigurationAggregate);
+            /// متغيير entityConfigurationTypes ، انواع کلاس هايي که اينترفيس IEntityConfigurationAggregate را پياده سازي ميکند را ذخيره ميکند .
             IList<Type> entityConfigurationTypes =
                 TypeUtility.GetTypesImplementingInterface(iEntityConfigurationType, iEntityConfigurationType);
             if (entityConfigurationTypes == null || entityConfigurationTypes.Count < 1)
@@ -153,9 +153,9 @@ namespace DataAccess.EntityModule.Class
 
             foreach (Type oneEntityConfigurationType in entityConfigurationTypes)
             {
-                /// شي اي از نوع کلاس هايي که اينترفيس IEntityConfigurationBase را پياده سازي ميکند را ذخيره ميکند .
-                IEntityConfigurationBase entityConfigurationObject =
-                    Activator.CreateInstance(oneEntityConfigurationType) as IEntityConfigurationBase;
+                /// شي اي از نوع کلاس هايي که اينترفيس IEntityConfigurationAggregate را پياده سازي ميکند را ذخيره ميکند .
+                IEntityConfigurationAggregate entityConfigurationObject =
+                    Activator.CreateInstance(oneEntityConfigurationType) as IEntityConfigurationAggregate;
 
                 if (entityConfigurationObject != null)
                     entityConfigurations.Add(entityConfigurationObject);

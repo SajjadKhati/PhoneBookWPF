@@ -9,7 +9,7 @@ namespace DataAccess.EntityModule.Class.Configuration.Class
 {
     /// <summary>
     /// کلاسی که با استفاده از الگوی طراحی Facade ، برای کم کردن پیچیدگی های فراخوانی و استفاده از کلاس هایی که اینترفیس
-    /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationBase" />
+    /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationAggregate" />
     /// را پیاده سازی میکنند ، 
     /// درون کلاس
     ///<see cref="T:DataAccess.EntityModule.Class.PhoneBookDbContext" />
@@ -18,7 +18,7 @@ namespace DataAccess.EntityModule.Class.Configuration.Class
     /// در واقع این کلاس ، رابطی میان کلاسِ
     /// <see cref="T:DataAccess.EntityModule.Class.PhoneBookDbContext" />
     /// با کلاس هایی که اینترفیس
-    /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationBase" />
+    /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationAggregate" />
     /// را پیاده سازی میکنند هست تا پیچیدگی استفاده از این کلاس ها را برای کلاس
     /// <see cref="T:DataAccess.EntityModule.Class.PhoneBookDbContext" />
     /// کمتر کند .
@@ -29,9 +29,9 @@ namespace DataAccess.EntityModule.Class.Configuration.Class
 
 
         /// <summary>
-        /// متغییر سراسری ای که لیستی از IEntityConfigurationBase را برای فراخوانی در بعضی متدها ذخیره میکند .
+        /// متغییر سراسری ای که لیستی از IEntityConfigurationAggregate را برای فراخوانی در بعضی متدها ذخیره میکند .
         /// </summary>
-        private List<IEntityConfigurationBase> entityConfigurations;
+        private List<IEntityConfigurationAggregate> entityConfigurations;
 
 
         #endregion
@@ -52,14 +52,14 @@ namespace DataAccess.EntityModule.Class.Configuration.Class
 
         /// <summary>
         /// متد سازنده ی این کلاس که شی ای از لیست
-        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationBase" />
+        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationAggregate" />
         /// را برای فراخوانی متدهایش استفاده میکند
         /// </summary>
         /// <param name="entityConfigurations">
         ///  لیست
-        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationBase" />
+        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationAggregate" />
         /// </param>
-        internal EntityConfigurationFacade(List<IEntityConfigurationBase> entityConfigurations)
+        internal EntityConfigurationFacade(List<IEntityConfigurationAggregate> entityConfigurations)
         {
             this.entityConfigurations = entityConfigurations;
         }
@@ -76,12 +76,12 @@ namespace DataAccess.EntityModule.Class.Configuration.Class
 
         /// <summary>
         /// همه ی متدهای آیتم های لیست اشیاء
-        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationBase" />
+        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationAggregate" />
         /// را که در متد سازنده گرفته شده بود را برای پیکربندی دیتابیس ، فراخوانی میکند .
         /// </summary>
         internal void SetEntityConfigurations()
         {
-            foreach (IEntityConfigurationBase entityConfiguration in this.entityConfigurations)
+            foreach (IEntityConfigurationAggregate entityConfiguration in this.entityConfigurations)
             {
                 this.CallEntityConfiguration(entityConfiguration);
             }
@@ -99,11 +99,11 @@ namespace DataAccess.EntityModule.Class.Configuration.Class
 
         /// <summary>
         /// متدهای کلاسی که اینترفیس
-        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationBase" />
+        /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationAggregate" />
         /// را فراخوانی کرده بود را برای پیکربندی فراخوانی میکند .
         /// </summary>
         /// <param name="entityConfiguration"></param>
-        private void CallEntityConfiguration(IEntityConfigurationBase entityConfiguration)
+        private void CallEntityConfiguration(IEntityConfigurationAggregate entityConfiguration)
         {
             entityConfiguration.SetTableName();
             entityConfiguration.SetAttributeDataType();

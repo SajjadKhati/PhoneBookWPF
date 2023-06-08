@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PhoneBook"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Name="PhoneBookWindow" Title="MainWindow" Height="450" Width="800" Loaded="PhoneBookWindow_Loaded">
     <Grid>
 
         <Button Content="Test" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="20, 2" Margin="20" Click="ButtonBase_Click"/>

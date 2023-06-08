@@ -15,5 +15,8 @@ namespace DataAccess.ExceptionModule
         /// متن پیغام برای زمانی که ورودی و آرگومانِ متدی ، null ارسال میشود .
         /// </summary>
         public static readonly string argumentNullExceptionMessage = "این پارامتر نباید null باشد .";
+
+
+        public static readonly string entityNotFoundExceptionMessage = "موجودیت مورد نظر ، یافت نشد";
     }
 }

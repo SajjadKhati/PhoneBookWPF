@@ -6,7 +6,5 @@ using System.Threading.Tasks;
 
 namespace DataAccess.EntityModule.Interface
 {
-    public interface IRepositoryAsyncBase : IGetAllAsync, ISaveChangesAsync, IInitializeDatabaseAsync
-    {
-    }
+    public interface IRepositoryAsyncAggregate : IGetAllAsync, ISaveChangesAsync, IInitializeDatabaseAsync { }
 }

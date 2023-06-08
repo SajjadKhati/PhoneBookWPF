@@ -27,14 +27,31 @@ namespace PhoneBook
             InitializeComponent();
         }
 
+
+        private void PhoneBookWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            //var people = myViewModel.PhoneBook.People;
+            
+            //BindingOperations.EnableCollectionSynchronization(people, PhoneBook.AddPeopleTaskLock)
+
+            // فراخوانی متدهای مربوط به لود در ViewModel و سپس در Model . بعد از آن هم فراخوانی متد Disable در BindingOperation
+        }
+
+
         private async void ButtonBase_Click(object sender, RoutedEventArgs e)
         {
             TestInViewModel testInViewModel = new TestInViewModel();
             await testInViewModel.Test();
 
             //MessageBox.Show("Task Completed");
+
         }
 
 
+
+
+
     }
+
+
 }

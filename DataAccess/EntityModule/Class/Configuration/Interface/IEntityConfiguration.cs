@@ -19,7 +19,5 @@ namespace DataAccess.EntityModule.Class.Configuration.Interface
     /// این اینترفیس ، برای بالا بردن یکپارچگی کلاس های مختلفی که پیکربندی را انجام میدهند است تا متدهای هم نامی داشته باشند و مخصوصا اینکه برای شی ساختن از این کلاس ها
     /// در زمان اجرای برنامه ، بتوانیم به تمام این کلاس هایی که یک اینترفیس خاصی (این اینترفیس) را پیاده سازی میکنند ، دسترسی داشته باشیم .
     /// </summary>
-    internal interface IEntityConfigurationBase : ITableConfiguration, IAttributeConfigurationBase
-    {
-    }
+    internal interface IEntityConfigurationAggregate : ITableConfiguration, IAttributeConfigurationAggregate  { }
 }

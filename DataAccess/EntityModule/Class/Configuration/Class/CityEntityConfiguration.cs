@@ -18,10 +18,10 @@ namespace DataAccess.EntityModule.Class.Configuration.Class
     /// <see cref="T:DataAccess.EntityModule.Class.PhoneBookDbContext" />
     /// ، صرفا پیکربندی موجودیت ها نیست ، این وظیفه را به این کلاس محول کردیم (یا همان ، به کلاس هایی که از کلاسِ جنریکِ EntityTypeConfiguration
     /// و اینترفیس
-    /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationBase" />
+    /// <see cref="T:DataAccess.EntityModule.Class.Configuration.Interface.IEntityConfigurationAggregate" />
     /// مشتق میشوند) ، محول کردیم .
     /// </summary>
-    internal class CityEntityConfiguration : EntityTypeConfiguration<CityEntity>, IEntityConfigurationBase
+    internal class CityEntityConfiguration : EntityTypeConfiguration<CityEntity>, IEntityConfigurationAggregate
     {
         #region متدهای پیاده سازی شده از Interface
 

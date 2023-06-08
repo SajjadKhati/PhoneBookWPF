@@ -17,8 +17,5 @@ namespace DataAccess.EntityModule.Class.Configuration.Interface
     /// 
     /// برای اجرای اصل interface segregation در solid ، این اینترفیس که برای پیاده سازی کاری مجزاست را جدا کردیم .
     /// </summary>
-    internal interface IAttributeConfigurationBase : 
-        IAttributeDataTypeConfiguration, IAttributeRequireConfiguration
-    {
-    }
+    internal interface IAttributeConfigurationAggregate  : IAttributeDataTypeConfiguration, IAttributeRequireConfiguration { }
 }
