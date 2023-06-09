@@ -16,17 +16,25 @@ namespace ViewModel
         public async Task Test()
         {
             //Person person = new Person();
-            //person.Id = 1;
-            //person.FirstName = "غلام حسین";
-            //person.LastName = "افشردی";
-            //person.Mobiles.Add(new Mobile() {MobileNumber = "45"});
-            //Address address = new Address() {Province = "تهران", City = "تهران", AddressDetail = "اسلام شهر"};
+            //person.Id = 4;
+            //person.FirstName = "علی اکبر";
+            //person.LastName = "شیرودی";
+            //person.Mobiles.Add(new Mobile() { MobileNumber = "111111111" });
+            //person.Mobiles.Add(new Mobile() { MobileNumber = "222222222" });
+            //Address address = new Address() { Province = "ایلام", City = "ایلام"};
             //address.Persons.Add(person);
             //person.Addresses.Add(address);
 
+            /////////
+
             IPhoneBookAggregator phoneBook = new PhoneBook();
             await phoneBook.LoadPeopleAsync();
+            //await phoneBook.LoadProvincesAsync();
+            //phoneBook.LoadCitiesByProvinceId(13);
 
+            //person.Addresses.Add(phoneBook.People[2].Addresses[0]);
+            //phoneBook.EditPerson(person);
+            phoneBook.People.RemoveAt(3);
         }
 
 

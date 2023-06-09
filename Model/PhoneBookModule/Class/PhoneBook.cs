@@ -85,11 +85,11 @@ namespace Model.PhoneBookModule.Class
             {
                 /// موقع واکشی اطلاعات از پایگاه داده ، در نخ اصلی دریافت میکند . یکی از دلایلش ، زیاد نبود آیتم های استان هاست .
                 IList<ProvinceEntity> allProvinceEntities = contactToDataAccess.GetAllByLazyLoadingMode<ProvinceEntity>();
-                if (allProvinceEntities == null || allProvinceEntities.Any())
+                if (allProvinceEntities == null || allProvinceEntities.Any() == false)
                     return;
                 /// اما موقع نگاشت کردن ، در نخ جدیدی انجام میدهد . دلیل خاصی ندارد . هر چند آیتم های کمی دارد .
                 provinces = await ProvinceMapper.MapScalarPropertiesToProvinceListAsync(allProvinceEntities);
-                if (provinces == null) 
+                if (provinces == null || provinces.Any() == false) 
                     return;
             }
             /// اما موقع اضافه کردن به پروپرتی ، در همین نخِ اصلی انجام میشود .
@@ -115,12 +115,14 @@ namespace Model.PhoneBookModule.Class
 
         public bool AddPerson(Person person)
         {
-            PersonEntity addPersonEntity = PersonMapper.MapToEntity(person,
-                out EntityNavigationPropertyUpdatedIdInfo personNavigationPropertyUpdatedId);
-
             using (ContactPhoneBookToDataAccess contactToDataAccess = new ContactPhoneBookToDataAccess())
             {
-                bool isSaved = contactToDataAccess.AddPersonEntity(addPersonEntity);
+                PersonEntity addPersonEntity = PersonMapper.MapToEntity(person, contactToDataAccess,
+                    out EntityNavigationPropertyUpdatedIdInfo personNavigationPropertyUpdatedId);
+
+                contactToDataAccess.AddPersonEntity(addPersonEntity);
+                bool isSaved = contactToDataAccess.SaveChanges();
+
                 this.UpdatePersonMemberIdAfterSaved(person, addPersonEntity, personNavigationPropertyUpdatedId);
                 return isSaved;
             }
@@ -135,13 +137,13 @@ namespace Model.PhoneBookModule.Class
                 if (editPersonEntity == null)
                     throw new Exception(ExceptionMessage.entityNotFoundExceptionMessage);
 
-                PersonMapper.UpdateEntityFromPerson(person, editPersonEntity, 
-                    out EntityNavigationPropertyUpdatedIdInfo personNavigationPropertyUpdatedId,
-                    out EntityNavigationPropertyRemovalInfo personEntityNavigationPropertyToRemove);
+                PersonMapper.UpdateEntityFromPerson(person, editPersonEntity, contactToDataAccess,
+                    out EntityNavigationPropertyUpdatedIdInfo personNavigationPropertyUpdatedId);
 
-                bool isSaved = contactToDataAccess.EditPersonEntity(editPersonEntity, personEntityNavigationPropertyToRemove);
+                contactToDataAccess.EditPersonEntity(editPersonEntity);
+                bool isSaved = contactToDataAccess.SaveChanges();
+
                 this.UpdateCollectionsIdAfterSaved(personNavigationPropertyUpdatedId);
-
                 return isSaved;
             }
         }
@@ -161,7 +163,10 @@ namespace Model.PhoneBookModule.Class
                     if (removePersonEntity == null)
                         throw new Exception(ExceptionMessage.entityNotFoundExceptionMessage);
 
-                    isDeletionSuccessed = contactToDataAccess.RemovePersonEntity(removePersonEntity);
+                    /// قبل از حذف ، برای حذف کردن رکورد در موجودیت آدرس ، این متد را فراخوانی کردیم .
+                    PersonMapper.RemoveEntityNavigationProperties(removePersonEntity, contactToDataAccess);
+                    contactToDataAccess.Remove(removePersonEntity);
+                    isDeletionSuccessed = contactToDataAccess.SaveChanges();
                 }
             }
             catch (Exception exception)

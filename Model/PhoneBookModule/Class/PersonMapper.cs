@@ -18,6 +18,10 @@ namespace Model.PhoneBookModule.Class
         private static Dictionary<Address, IList<int>> address_PersonIdsDictionary;
 
 
+        private static Person address_MainPerson;
+
+
+
 
         #region متدهای مربوط به Query
 
@@ -69,22 +73,21 @@ namespace Model.PhoneBookModule.Class
         #region متدهای مربوط به NonQuery
 
 
-        internal static PersonEntity MapToEntity(Person person, 
+        internal static PersonEntity MapToEntity(Person person, ContactPhoneBookToDataAccess contactToDataAccess,
             out EntityNavigationPropertyUpdatedIdInfo personNavigationPropertyUpdatedIds)
         {
             PersonEntity personEntityToFill = new PersonEntity();
-            personNavigationPropertyUpdatedIds = CopyPersonToEntity(person, personEntityToFill);
+            personNavigationPropertyUpdatedIds = CopyPersonToEntity(person, personEntityToFill, contactToDataAccess);
             return personEntityToFill;
         }
 
 
-        internal static void UpdateEntityFromPerson(Person person, PersonEntity personEntity,
-            out EntityNavigationPropertyUpdatedIdInfo personNavigationPropertyUpdatedIds,
-            out EntityNavigationPropertyRemovalInfo personEntityNavigationPropertyToRemove)
+        internal static void UpdateEntityFromPerson(Person person, PersonEntity personEntity, 
+            ContactPhoneBookToDataAccess contactToDataAccess,
+            out EntityNavigationPropertyUpdatedIdInfo personNavigationPropertyUpdatedIds)
         {
-            personEntityNavigationPropertyToRemove = ExtractEntityRemovalInfo(personEntity);
-            RemoveEntityNavigationProperties(personEntity);
-            personNavigationPropertyUpdatedIds = CopyPersonToEntity(person, personEntity);
+            RemoveEntityNavigationProperties(personEntity, contactToDataAccess);
+            personNavigationPropertyUpdatedIds = CopyPersonToEntity(person, personEntity, contactToDataAccess);
         }
 
 
@@ -97,38 +100,70 @@ namespace Model.PhoneBookModule.Class
         #region  متدهای خصوصی مربوط به NonQuery
 
 
-        private static void RemoveEntityNavigationProperties(PersonEntity personEntity)
+        internal static void RemoveEntityNavigationProperties(PersonEntity personEntity, 
+            ContactPhoneBookToDataAccess contactToDataAccess)
         {
-            if (personEntity.MobileNumbers != null && personEntity.MobileNumbers.Count > 0)
-            {
-                foreach (MobileNumberEntity mobileEntity in personEntity.MobileNumbers.ToList())
-                {
-                    personEntity.MobileNumbers.Remove(mobileEntity);
-                }
-            }
+            RemoveMobileNumberEntities(personEntity.MobileNumbers, contactToDataAccess);
+            RemoveAddressEntities(personEntity.Addresses, contactToDataAccess);
+        }
 
-            if (personEntity.Addresses != null && personEntity.Addresses.Count > 0)
+
+        private static void RemoveMobileNumberEntities(ICollection<MobileNumberEntity> mobileEntities,
+            ContactPhoneBookToDataAccess contactToDataAccess)
+        {
+            if (mobileEntities == null || mobileEntities.Any() == false)
+                return;
+
+            foreach (MobileNumberEntity mobileEntity in mobileEntities.ToList())
             {
-                foreach (AddressEntity addressEntity in personEntity.Addresses.ToList())
-                {
-                    personEntity.Addresses.Remove(addressEntity);
-                }
+                mobileEntities.Remove(mobileEntity);
+
+                /// وظیفه ی این متد و کلا این کلاس ، ذخیره ی تغییرات نیست .
+                /// پس فقط موجودیت مورد نظر را حذف میکنیم تا نگاشت مد نظرمان به درستی انجام شود اما ذخیره نمیکنیم .
+                contactToDataAccess.Remove(mobileEntity);
             }
         }
 
 
-        private static EntityNavigationPropertyUpdatedIdInfo CopyPersonToEntity(Person person, PersonEntity personEntity)
+        private static void RemoveAddressEntities(ICollection<AddressEntity> addressEntities,
+            ContactPhoneBookToDataAccess contactToDataAccess)
+        {
+            if (addressEntities == null || addressEntities.Any() == false)
+                return;
+
+            foreach (AddressEntity addressEntity in addressEntities.ToList())
+            {
+                addressEntities.Remove(addressEntity);
+
+                /// اگر کالکشن Persons در موجودیت addressEntity ، چندین عضو داشت ،
+                /// یعنی آن آدرس برای چندین نفر هست ، پس آن آدرس را حذف نکند .
+                if (addressEntity.Persons == null || addressEntity.Persons.Count <= 1)
+                    /// وظیفه ی این متد و کلا این کلاس ، ذخیره ی تغییرات نیست .
+                    /// پس فقط موجودیت مورد نظر را حذف میکنیم تا نگاشت مد نظرمان به درستی انجام شود اما ذخیره نمیکنیم .
+                    contactToDataAccess.Remove(addressEntity);
+            }
+        }
+
+
+        private static EntityNavigationPropertyUpdatedIdInfo CopyPersonToEntity(Person person, PersonEntity personEntity,
+            ContactPhoneBookToDataAccess contactToDataAccess)
         {
             person = person ?? throw new ArgumentNullException(nameof(person), ExceptionMessage.argumentNullExceptionMessage);
             personEntity = personEntity ?? throw new ArgumentNullException(nameof(personEntity),
                 ExceptionMessage.argumentNullExceptionMessage);
 
+            address_MainPerson = person;
+
             personEntity.Id = person.Id;
             personEntity.FirstName = person.FirstName;
             personEntity.LastName = person.LastName;
-            EntityNavigationPropertyUpdatedIdInfo personNavigationPropertyUpdatedIds = new EntityNavigationPropertyUpdatedIdInfo();
-            personNavigationPropertyUpdatedIds.PersonMobileUpdatedIds = CopyMobileCollectionToEntity(person.Mobiles, personEntity);
-            personNavigationPropertyUpdatedIds.PersonAddressUpdatedIds = CopyAddressCollectionToEntity(person.Addresses, personEntity);
+            EntityNavigationPropertyUpdatedIdInfo personNavigationPropertyUpdatedIds = new EntityNavigationPropertyUpdatedIdInfo
+            {
+                PersonMobileUpdatedIds = CopyMobileCollectionToEntity(person.Mobiles, personEntity),
+                PersonAddressUpdatedIds = CopyAddressCollectionToEntity(person.Addresses, personEntity, contactToDataAccess)
+            };
+
+            address_MainPerson = null;
             return personNavigationPropertyUpdatedIds;
         }
 
@@ -160,7 +195,7 @@ namespace Model.PhoneBookModule.Class
 
 
         private static IDictionary<AddressEntity, Address> CopyAddressCollectionToEntity(IList<Address> personAddresses, 
-            PersonEntity personEntity)
+            PersonEntity personEntity, ContactPhoneBookToDataAccess contactToDataAccess)
         {
             if (personAddresses == null || personAddresses.Count < 1)
                 return null;
@@ -177,7 +212,7 @@ namespace Model.PhoneBookModule.Class
                     Address = address.AddressDetail,
                     PostalCode = address.PostalCode
                 };
-                CopyAddressesPersonCollectionToEntity(address.Persons, addressEntity, personEntity);
+                CopyAddressesPersonCollectionToEntity(address.Persons, addressEntity, personEntity, contactToDataAccess);
                 personAddressUpdatedIds.Add(addressEntity, address);
 
                 personEntity.Addresses.Add(addressEntity);
@@ -188,28 +223,30 @@ namespace Model.PhoneBookModule.Class
 
 
         private static void CopyAddressesPersonCollectionToEntity(IList<Person> addressesPersons, AddressEntity addressEntity,
-            PersonEntity defaultPersonEntity)
+            PersonEntity defaultPersonEntity, ContactPhoneBookToDataAccess contactToDataAccess)
         {
-            addressEntity.Persons = new List<PersonEntity>(1);
-            /// اگر تعداد آیتم های addressesPersons ، صفر بود یا یک بود ، یعنی نهایتا با خود شیِ PersonEntity ای که شیِ اصلی و والد هست ، ارتباط دارد .
-            /// همان شیِ defaultPersonEntity
-            if (addressesPersons == null || addressesPersons.Count < 2)
-                addressEntity.Persons.Add(defaultPersonEntity);
-            else
+            /// در هر صورتی ، یعنی چه addressesPersons برابر با null بود یا هیچ آیتمی نداشت یا هر تعداد آیتمی که داشت ،شیِ آدرس ، نهایتا با شیِ defaultPersonEntity
+            /// که شیِ اصلی اش هست ، ارتباط دارد ، پس به لیست کالکشن Persons در addressEntity ، اضافه کند .
+            addressEntity.Persons = new List<PersonEntity>(1)
             {
-                /// وگرنه ، با PersonEntity ای که از قبل موجود هست و در دیتابیس هست ، ارتباط دارد
-                /// پس باید داخل دیتابیس ، این شی را پیدا کند .
-                using (var contactToDataAccess = new ContactPhoneBookToDataAccess())
-                {
-                    foreach (Person person in addressesPersons)
-                    {
-                        PersonEntity findedPersonEntity = contactToDataAccess.FindByLazyLoadingMode<PersonEntity>(person.Id);
-                        if (findedPersonEntity == null)
-                            break;
+                defaultPersonEntity
+            };
 
-                        addressEntity.Persons.Add(defaultPersonEntity.Id == findedPersonEntity.Id ? defaultPersonEntity : findedPersonEntity);
-                    }
-                }
+            if (addressesPersons == null || addressesPersons.Count < 2)
+                return;
+
+            /// وگرنه ، با PersonEntity ای که از قبل موجود هست و در دیتابیس هست ، ارتباط دارد
+            /// پس باید داخل دیتابیس ، این شی را پیدا کند .
+            foreach (Person person in addressesPersons)
+            {
+                if (person == address_MainPerson)
+                    continue;
+
+                PersonEntity findedPersonEntity = contactToDataAccess.FindByLazyLoadingMode<PersonEntity>(person.Id);
+                if (findedPersonEntity == null)
+                    continue;
+
+                addressEntity.Persons.Add(findedPersonEntity);
             }
         }
 
@@ -221,36 +258,36 @@ namespace Model.PhoneBookModule.Class
         #region  متدهای خصوصی مربوط به Query
 
 
-        private static EntityNavigationPropertyRemovalInfo ExtractEntityRemovalInfo(PersonEntity beforeUpdatePersonEntity)
-        {
-            EntityNavigationPropertyRemovalInfo entityRemovalInfo = null;
-            if (beforeUpdatePersonEntity.MobileNumbers != null && beforeUpdatePersonEntity.MobileNumbers.Count > 0)
-            {
-                entityRemovalInfo = new EntityNavigationPropertyRemovalInfo()
-                {
-                    PersonMobileEntitiesToRemove = new List<MobileNumberEntity>(1)
-                };
+        //private static EntityNavigationPropertyRemovalInfo ExtractEntityRemovalInfo(PersonEntity beforeUpdatePersonEntity)
+        //{
+        //    EntityNavigationPropertyRemovalInfo entityRemovalInfo = null;
+        //    if (beforeUpdatePersonEntity.MobileNumbers != null && beforeUpdatePersonEntity.MobileNumbers.Count > 0)
+        //    {
+        //        entityRemovalInfo = new EntityNavigationPropertyRemovalInfo()
+        //        {
+        //            PersonMobileEntitiesToRemove = new List<MobileNumberEntity>(1)
+        //        };
 
-                foreach (MobileNumberEntity mobileEntityToRemove in beforeUpdatePersonEntity.MobileNumbers)
-                {
-                    entityRemovalInfo.PersonMobileEntitiesToRemove.Add(mobileEntityToRemove);
-                }
-            }
+        //        foreach (MobileNumberEntity mobileEntityToRemove in beforeUpdatePersonEntity.MobileNumbers)
+        //        {
+        //            entityRemovalInfo.PersonMobileEntitiesToRemove.Add(mobileEntityToRemove);
+        //        }
+        //    }
 
-            if (beforeUpdatePersonEntity.Addresses != null && beforeUpdatePersonEntity.Addresses.Count > 0)
-            {
-                entityRemovalInfo = entityRemovalInfo ?? new EntityNavigationPropertyRemovalInfo();
-                entityRemovalInfo.PersonAddressEntitiesToRemove = new List<AddressEntity>(1);
+        //    if (beforeUpdatePersonEntity.Addresses != null && beforeUpdatePersonEntity.Addresses.Count > 0)
+        //    {
+        //        entityRemovalInfo = entityRemovalInfo ?? new EntityNavigationPropertyRemovalInfo();
+        //        entityRemovalInfo.PersonAddressEntitiesToRemove = new List<AddressEntity>(1);
 
-                foreach (AddressEntity addressEntityToRemove in beforeUpdatePersonEntity.Addresses)
-                {
-                    if (addressEntityToRemove.Persons?.Count == 1)
-                        entityRemovalInfo.PersonAddressEntitiesToRemove.Add(addressEntityToRemove);
-                }
-            }
+        //        foreach (AddressEntity addressEntityToRemove in beforeUpdatePersonEntity.Addresses)
+        //        {
+        //            if (addressEntityToRemove.Persons?.Count == 1)
+        //                entityRemovalInfo.PersonAddressEntitiesToRemove.Add(addressEntityToRemove);
+        //        }
+        //    }
 
-            return entityRemovalInfo;
-        }
+        //    return entityRemovalInfo;
+        //}
 
 
         private static void CopyEntityToPerson(PersonEntity personEntity, Person person)

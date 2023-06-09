@@ -59,34 +59,26 @@ namespace Model.PhoneBookModule.Class
         }
 
 
-        internal bool AddPersonEntity(PersonEntity personEntity)
+        internal void AddPersonEntity(PersonEntity personEntity)
         {
             this._repository.Add(personEntity);
-            return this._repository.SaveChanges() > 0;
         }
 
 
-        internal bool EditPersonEntity(PersonEntity personEntity, 
-            EntityNavigationPropertyRemovalInfo personEntityNavigationPropertyToRemove)
+        internal void EditPersonEntity(PersonEntity personEntity)
         {
-            if (personEntityNavigationPropertyToRemove != null)
-            {
-                if (personEntityNavigationPropertyToRemove.PersonMobileEntitiesToRemove != null)
-                    RemoveMobileEntities(personEntityNavigationPropertyToRemove.PersonMobileEntitiesToRemove);
-
-                if (personEntityNavigationPropertyToRemove.PersonAddressEntitiesToRemove != null &&
-                personEntityNavigationPropertyToRemove.PersonAddressEntitiesToRemove.Count > 0)
-                    RemoveAddressEntities(personEntityNavigationPropertyToRemove.PersonAddressEntitiesToRemove);
-            }
-
             this._repository.Edit(personEntity.Id, personEntity);
-            return this._repository.SaveChanges() > 0;
         }
 
 
-        internal bool RemovePersonEntity(PersonEntity personEntity)
+        internal void Remove<TRemoveEntity>(TRemoveEntity personEntity) where TRemoveEntity : class
         {
             this._repository.Remove(personEntity);
+        }
+
+
+        internal bool SaveChanges()
+        {
             return this._repository.SaveChanges() > 0;
         }
 
@@ -95,33 +87,6 @@ namespace Model.PhoneBookModule.Class
         {
             this._repository.Dispose();
         }
-
-
-
-        #region متدهای Private
-
-
-        private void RemoveMobileEntities(IList<MobileNumberEntity> mobileEntitiesToRemove)
-        {
-            foreach (MobileNumberEntity mobileEntity in mobileEntitiesToRemove)
-            {
-                this._repository.Remove(mobileEntity);
-            }
-        }
-
-
-        private void RemoveAddressEntities(IList<AddressEntity> addressEntitiesToRemove)
-        {
-            foreach (AddressEntity addressEntity in addressEntitiesToRemove)
-            {
-                this._repository.Remove(addressEntity);
-            }
-        }
-
-
-        #endregion
-
-
 
 
     }
