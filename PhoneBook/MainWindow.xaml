@@ -5,10 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PhoneBook"
         mc:Ignorable="d"
+        DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PhoneBookViewModel}"
         Name="PhoneBookWindow" Title="MainWindow" Height="450" Width="800" Loaded="PhoneBookWindow_Loaded">
     <Grid>
 
         <Button Content="Test" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="20, 2" Margin="20" Click="ButtonBase_Click"/>
         
+        <ComboBox Name="Combobox" Margin="120, 20" Padding="30, 5" HorizontalAlignment="Left" VerticalAlignment="Top"
+                  ItemsSource="{Binding Path=PhoneBook.People}"/>
+
+
     </Grid>
 </Window>

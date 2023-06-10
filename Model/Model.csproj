@@ -55,7 +55,6 @@
     <Compile Include="PhoneBookModule\Class\Address.cs" />
     <Compile Include="PhoneBookModule\Class\City.cs" />
     <Compile Include="PhoneBookModule\Class\ContactToDataAccess.cs" />
-    <Compile Include="PhoneBookModule\Class\EntityNavigationPropertyRemovalInfo.cs" />
     <Compile Include="PhoneBookModule\Class\PersonMapper.cs" />
     <Compile Include="PhoneBookModule\Class\EntityNavigationPropertyUpdatedIdInfo.cs" />
     <Compile Include="PhoneBookModule\Class\ProvinceMapper.cs" />
