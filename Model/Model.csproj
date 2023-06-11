@@ -67,6 +67,18 @@
     <Compile Include="PhoneBookModule\Interface\IPhoneBookAggregator.cs" />
     <Compile Include="PhoneBookModule\Interface\IProvince.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ValidationModule\Class\AddressDetailValidator.cs" />
+    <Compile Include="ValidationModule\Class\CityValidator.cs" />
+    <Compile Include="ValidationModule\Class\FirstNameValidator.cs" />
+    <Compile Include="ValidationModule\Class\LengthValidator.cs" />
+    <Compile Include="ValidationModule\Class\ProvinceValidator.cs" />
+    <Compile Include="ValidationModule\Class\PersonValidator.cs" />
+    <Compile Include="ValidationModule\Class\ValidType.cs" />
+    <Compile Include="ValidationModule\Interface\IValidator.cs" />
+    <Compile Include="ValidationModule\Class\LastNameValidator.cs" />
+    <Compile Include="ValidationModule\Class\PostalCodeValidator.cs" />
+    <Compile Include="ValidationModule\Class\MobileNumberValidator.cs" />
+    <Compile Include="ValidationModule\Class\RegexWork.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj">

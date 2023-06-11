@@ -8,5 +8,6 @@ namespace ViewModel.PhoneBookViewModelModule.Interface
 {
     public interface IPhoneBookViewModelAggregator : IPhoneBookViewModel, IBindingRelatedOperations
     {
+
     }
 }

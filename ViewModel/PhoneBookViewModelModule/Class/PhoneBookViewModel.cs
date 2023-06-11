@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using Model.PhoneBookModule.Class;
 using Model.PhoneBookModule.Interface;
+using Model.ValidationModule.Class;
+using Model.ValidationModule.Interface;
 using Prism.Commands;
 using System;
 using System.Collections;

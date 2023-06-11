@@ -80,12 +80,10 @@ namespace PhoneBook
             //viewModel.LoadPhoneBookAsyncCommand.Execute(null);
 
             ////////////////////////////////
-
+            /// 
             //TestInViewModel testInViewModel = new TestInViewModel();
             //await testInViewModel.Test();
-
             //MessageBox.Show("Task Completed");
-
         }
 
 
@@ -120,13 +118,18 @@ namespace PhoneBook
 
         private void PersonDeleteStatus(Tuple<bool, Exception> personDeleteInfo)
         {
-
+            if (personDeleteInfo.Item2 != null)
+            {
+                string errorMessage = $"خطایی زمان حذف اطلاعات و رکورد مربوط به شخص از پایگاه داده اتفاق افتاد  :\n\n{personDeleteInfo.Item2.Message}";
+                MessageBox.Show(errorMessage, "خطای حذف اطلاعات");
+            }
         }
 
 
         private void LoadExceptionOccured(Exception loadException)
         {
-
+            string errorMessage = $"خطایی زمان بارگذاری اطلاعات از پایگاه داده اتفاق افتاد  :\n\n{loadException.Message}";
+            MessageBox.Show(errorMessage, "خطای بارگذاری");
         }
 
 
