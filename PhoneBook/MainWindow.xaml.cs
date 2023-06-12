@@ -98,7 +98,7 @@ namespace PhoneBook
 
         private void InitializePhoneBookViewModel()
         {
-            this.PhoneBookViewModel = new PhoneBookViewModel(this.PersonDeleteStatus, this.LoadExceptionOccured);
+            this.PhoneBookViewModel = new PhoneBookViewModel(this.PersonDeleteStatus, this.LoadExceptionOccured, this.SaveSuccessed);
         }
 
 
@@ -130,6 +130,12 @@ namespace PhoneBook
         {
             string errorMessage = $"خطایی زمان بارگذاری اطلاعات از پایگاه داده اتفاق افتاد  :\n\n{loadException.Message}";
             MessageBox.Show(errorMessage, "خطای بارگذاری");
+        }
+
+
+        private void SaveSuccessed(string message)
+        {
+            MessageBox.Show(message, "ذخیره ی موفقیت آمیز");
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Model.PhoneBookModule.Class;
 using Model.PhoneBookModule.Interface;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,14 @@ namespace ViewModel.PhoneBookViewModelModule.Interface
 
 
         ICommand LoadCitiesByProvinceIdCommand{ get; }
+
+
+
+
+        bool AddPerson(object person);
+
+
+        bool EditPerson(object person);
 
     }
 }

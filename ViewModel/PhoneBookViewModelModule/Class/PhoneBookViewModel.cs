@@ -34,9 +34,13 @@ namespace ViewModel.PhoneBookViewModelModule.Class
         private Action<Exception> _loadExceptionOccuredAction;
 
 
+        private Action<string> _saveSuccessedAction;
 
 
-        public PhoneBookViewModel(Action<Tuple<bool, Exception>> personDeleteStatusAction, Action<Exception> loadExceptionOccuredAction)
+
+
+        public PhoneBookViewModel(Action<Tuple<bool, Exception>> personDeleteStatusAction, 
+            Action<Exception> loadExceptionOccuredAction, Action<string> saveSuccessedAction)
         {
             this.PhoneBook = new PhoneBook();
             this.PhoneBook.PersonDeleteStatus += this.PhoneBook_PersonDeleteStatus;
@@ -46,6 +50,7 @@ namespace ViewModel.PhoneBookViewModelModule.Class
 
             this._personDeleteStatusAction = personDeleteStatusAction;
             this._loadExceptionOccuredAction = loadExceptionOccuredAction;
+            this._saveSuccessedAction = saveSuccessedAction;
         }
 
 
@@ -96,6 +101,38 @@ namespace ViewModel.PhoneBookViewModelModule.Class
         private void PhoneBook_PersonDeleteStatus(object sender, DeleteStatusEventArgs e)
         {
             this._personDeleteStatusAction?.Invoke(new Tuple<bool, Exception>(e.IsDeletionSuccessed, e.DeletionException));
+        }
+
+
+        public bool AddPerson(object person)
+        {
+            if (person == null)
+                return false;
+
+            Person personConverted = person as Person;
+            if (personConverted == null)
+                return false;
+
+            bool isSaved = this.PhoneBook.AddPerson(personConverted);
+            if (isSaved == true)
+                this._saveSuccessedAction?.Invoke("عملیات ذخیره سازی ، با موفقیت انجام شد");
+            return isSaved;
+        }
+
+
+        public bool EditPerson(object person)
+        {
+            if (person == null)
+                return false;
+
+            Person personConverted = person as Person;
+            if (personConverted == null)
+                return false;
+
+            bool isSaved = this.PhoneBook.EditPerson(personConverted);
+            if (isSaved == true)
+                this._saveSuccessedAction?.Invoke("عملیات ذخیره سازی ، با موفقیت انجام شد");
+            return isSaved;
         }
 
 
