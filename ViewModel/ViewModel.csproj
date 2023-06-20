@@ -81,7 +81,7 @@
     <Compile Include="PhoneBookViewModelModule\Interface\IBindingRelatedOperations.cs" />
     <Compile Include="PhoneBookViewModelModule\Interface\IPhoneBookViewModel.cs" />
     <Compile Include="PhoneBookViewModelModule\Interface\IPhoneBookViewModelAggregator.cs" />
-    <Compile Include="TestInViewModel.cs" />
+    <Compile Include="PhoneBookViewModelModule\Interface\IViewEventResponder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,50 @@
+﻿<UserControl
+             x:Class="PoshtibangirTolo.View.UserControls.TitleBarUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PoshtibangirTolo.View.UserControls"
+             mc:Ignorable="d" 
+             d:DesignWidth="800" d:DesignHeight="50"
+             x:Name="MainTitleBarUserControl">
+
+    <DockPanel Name="TitleBarDockPanel" VerticalAlignment="Top"
+                MouseLeftButtonDown="TitleBarDockPanel_MouseLeftButtonDown">
+
+        <!--  این کنترل برای رسم وکتور گرافیک یا رسم بیت مپ و آیکون استفاده میشه .  -->
+        <Image DockPanel.Dock="Left"
+        DataContext="{Binding 
+        RelativeSource={RelativeSource Mode=FindAncestor, 
+        AncestorType={x:Type local:TitleBarUserControl}}}"
+        Margin="10, 4, 0, 4" HorizontalAlignment="Left" 
+        VerticalAlignment="Top" Width="32" Height="32">
+            <Image.Source>
+                <DrawingImage>
+                    <DrawingImage.Drawing>
+                        <DrawingGroup>
+                            <!--  برای رسم vector graphic ، از پروپرتیِ Geometry ئه GeometryDrawing استفاده میشه .  -->
+                            <GeometryDrawing Brush="{DynamicResource TitleBarUserControlGeometryDrawing_Brush}" 
+                            Geometry="{Binding Path=TitleBarMainIconGeometry}" />
+                            <!--  برای رسم بیت مپ یا آیکون ، از پروپرتیِ ImageSource ئه ImageDrawing استفاده میشه .   -->
+                            <ImageDrawing Rect="0, 0, 32, 32" 
+                            ImageSource="{Binding Path=TitleBarMainIconImageSource}"/>
+                        </DrawingGroup>
+                    </DrawingImage.Drawing>
+                </DrawingImage>
+            </Image.Source>
+        </Image>
+
+        <!--  متن و عنوان TitleBar  -->
+        <Label DockPanel.Dock="Left" Margin="1, 0, 10, 4" VerticalAlignment="Center" FontSize="19"
+               HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+               Content="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                AncestorType={x:Type Window}}, Path=Title}"/>
+
+        <DockPanel Name="TitleBarAddControlsDockPanel" LastChildFill="False" Background="Transparent"
+                   Loaded="TitleBarAddControlsDockPanel_Loaded"/>
+
+    </DockPanel>
+
+
+</UserControl>

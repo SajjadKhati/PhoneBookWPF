@@ -14,7 +14,7 @@ using System.Windows.Data;
 
 namespace ViewModel.PhoneBookValidationRuleModule
 {
-    public class PhoneBookValidationRule : ValidationRule
+    public class PersonValidationRule : ValidationRule
     {
         public IPhoneBookViewModelAggregator PhoneBookViewModel { get; set; }
 

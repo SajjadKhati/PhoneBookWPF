@@ -46,7 +46,7 @@ namespace ViewModel.PhoneBookViewModelModule.Class
             this.PhoneBook.PersonDeleteStatus += this.PhoneBook_PersonDeleteStatus;
 
             this.LoadPhoneBookAsyncCommand = new AsyncRelayCommand(this.LoadPhoneBookAsync);
-            this.LoadCitiesByProvinceIdCommand = new RelayCommand<int>(this.LoadCitiesByProvinceId);
+            this.LoadCitiesByProvinceIdCommand = new RelayCommand<Province>(this.LoadCitiesByProvinceId);
 
             this._personDeleteStatusAction = personDeleteStatusAction;
             this._loadExceptionOccuredAction = loadExceptionOccuredAction;
@@ -79,9 +79,11 @@ namespace ViewModel.PhoneBookViewModelModule.Class
         }
 
 
-        private void LoadCitiesByProvinceId(int provinceId)
+        private void LoadCitiesByProvinceId(Province province)
         {
-            if (provinceId < 1)
+            if (province == null)
+                return;
+            if (province.Id < 1)
             {
                 this._loadExceptionOccuredAction?.Invoke(new Exception("مقدار شناسه ی استان ، باید بزرگتر از صفر باشد ."));
                 return;
@@ -89,7 +91,7 @@ namespace ViewModel.PhoneBookViewModelModule.Class
 
             try
             {
-                this.PhoneBook.LoadCitiesByProvinceId(provinceId);
+                this.PhoneBook.LoadCitiesByProvinceId(province.Id);
             }
             catch (Exception exception)
             {
@@ -133,6 +135,30 @@ namespace ViewModel.PhoneBookViewModelModule.Class
             if (isSaved == true)
                 this._saveSuccessedAction?.Invoke("عملیات ذخیره سازی ، با موفقیت انجام شد");
             return isSaved;
+        }
+
+
+        public bool HasValuePostalCodeOrAddressDetails(object person)
+        {
+            Person personConverted = person as Person;
+            if (personConverted == null) 
+                return false;
+
+            foreach (Address address in personConverted.Addresses)
+            {
+                if (this.HasValuePostalCodeOrAddressDetailsForSingleAddress(address) == true)
+                    return true;
+            }
+            return false;
+        }
+
+
+        private bool HasValuePostalCodeOrAddressDetailsForSingleAddress(Address address)
+        {
+            if ((address.PostalCode.HasValue == true && address.PostalCode > 0) || string.IsNullOrEmpty(address.AddressDetail) == false) 
+                return true;
+
+            return false;
         }
 
 

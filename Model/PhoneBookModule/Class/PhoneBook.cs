@@ -105,7 +105,7 @@ namespace Model.PhoneBookModule.Class
                 if (findedProvinceEntity == null)
                     return;
                 int indexOfProvince = this.GetIndexOfProvince(provinceId);
-                if (indexOfProvince < 0)
+                if (indexOfProvince < 0 || this.Provinces[indexOfProvince].Cities.Count > 0)
                     return;
 
                 ProvinceMapper.AddCitiesToProvince(findedProvinceEntity.CityEntities, this.Provinces[indexOfProvince].Cities);

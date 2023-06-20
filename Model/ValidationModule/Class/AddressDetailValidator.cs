@@ -28,7 +28,7 @@ namespace Model.ValidationModule.Class
         public override bool IsValid()
         {
             bool validationResult;
-            validationResult = this.IsLengthValid(this._validationValue, 50);
+            validationResult = this.IsLengthValid(this._validationValue, 300);
             if (validationResult == false)
             {
                 this.ErrorMessage = "حداکثر تعداد کاراکتر برای جزئیات آدرس ، نباید بیشتر از 300 کاراکتر باشد .";

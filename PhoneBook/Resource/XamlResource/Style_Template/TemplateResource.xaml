@@ -1,0 +1,1547 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ToolKit ="http://schemas.xceed.com/wpf/xaml/toolkit"
+                    xmlns:ToolKitThemes="clr-namespace:Xceed.Wpf.Toolkit.Themes;assembly=Xceed.Wpf.Toolkit"
+                    xmlns:CustomControls ="clr-namespace:PoshtibangirTolo.View.CustomControl"
+                    xmlns:ToolTipsValueConverter="clr-namespace:ToolTipsValueConverter">
+
+    
+    <Path x:Key="checkboxTickPath"  Data="M1,7 Q3,7 5,9 Q8,4 12,2 M1,7 Q3.2,7.2 5,11 Q8.2,4.2 12,2"/>
+
+
+
+
+    <!--#region   تمپلیت برای ComboBox -->
+
+    <ControlTemplate x:Key="ComboBoxTemplate" TargetType="{x:Type ComboBox}">
+        <Grid>
+            <!--The ToggleButton is databound to the ComboBox itself to toggle IsDropDownOpen-->
+            <ToggleButton x:Name="ToggleButton" Template="{DynamicResource ComboBoxsToggleButtonTemplate}" Background="{TemplateBinding Background}" 
+            BorderBrush="{TemplateBinding BorderBrush}" Foreground="{TemplateBinding Foreground}" Focusable="False" 
+            IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press"/>
+            <!-- کنترل contentPaddingBorder برای تنظیم Padding برای ContentPresenter قرار داده شد چون ContentPresenter ، Padding نداره .  چون به HitTesting برای contentPaddingBorder نیاز نداریم ، یعنی نیاز نداریم که وقتی موس روی این کنترل میاد ، موس را کپچر کنه ، Background و BorderBrush ئه این کنترل ، را باید Null قرار بدیم . نه اینکه Transparent قرار بدیم .-->
+            <Border x:Name="contentPaddingBorder" Padding="{TemplateBinding Padding}" Background="{x:Null}" BorderBrush="{x:Null}">
+                <ContentPresenter  x:Name="ContentSite" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"  
+                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="6,-2,20,0" IsHitTestVisible="False" 
+                TextBlock.Foreground="{TemplateBinding Foreground}" Content="{TemplateBinding SelectionBoxItem }" 
+                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
+                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+            </Border>
+
+            <!--The TextBox must be named PART_EditableTextBox or ComboBox will not recognize it-->
+            <TextBox x:Name="PART_EditableTextBox" Visibility="Hidden" Template="{DynamicResource TextBoxOfComboBoxTemplate}" 
+            HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,20,0" Focusable="True" 
+            Background= "{DynamicResource TextBoxOfComboBoxBackground}" Foreground="{TemplateBinding Foreground}" 
+            IsReadOnly="{TemplateBinding IsReadOnly}" 
+            BorderBrush="{DynamicResource TextBoxOfComboBoxBorderBrush}"/>
+            <!--The Popup shows the list of items in the ComboBox. IsOpen is databound to IsDropDownOpen which is toggled via the ComboBoxToggleButton-->
+            <Popup x:Name="PART_Popup" PopupAnimation="Slide" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" 
+            Focusable="False" AllowsTransparency="True"  MaxHeight="{TemplateBinding MaxDropDownHeight}" 
+            MinWidth="{TemplateBinding ActualWidth}" MaxWidth="{TemplateBinding ActualWidth}">
+                <Grid x:Name="DropDown" SnapsToDevicePixels="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border x:Name="DropDownBorder" Background="{DynamicResource comb_Pop_Fill_Brush}" 
+                    BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Grid.ColumnSpan="2"/>
+                    <!--  در پروپرتیِ ScrollViewer.HorizontalScrollBarVisibility که در کد زیر ، TemplateBinding انجام دادیم ، مثل بقیه ی پروپرتی هایی که TemplateBinding انجام میدادیم ، این پروپرتی هم اشاره به پروپرتیِ نوعِ TargetType ای که براش تمپلیت مینویسیم داره .
+                    یعنی این پروپرتی ، به پروپرتیِ ScrollViewer.HorizontalScrollBarVisibility ئه مربوط به ComboBox مون اشاره داره . و هر مقداری که اون بشه ، این مقدار در کد زیر هم به همون مقدار ، تغییر میکنه .
+                    -->
+                    <ScrollViewer  Margin="4,6,4,6" SnapsToDevicePixels="True" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" 
+                    VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" Grid.ColumnSpan="2">
+
+                        <ItemsPresenter/>
+
+                    </ScrollViewer>
+                </Grid>
+            </Popup>
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <!--This forces the DropDown to have a minimum size if it is empty-->
+            <Trigger Property="HasItems" Value="False">
+                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="40"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="PART_EditableTextBox" Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+                <Setter TargetName="PART_EditableTextBox" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}"/>
+                <Setter  TargetName="PART_EditableTextBox" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" />
+                <Setter TargetName="ContentSite" Property="TextBlock.Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+            </Trigger>
+            <Trigger Property="IsGrouping" Value="True">
+                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+            </Trigger>
+            <Trigger SourceName="PART_Popup" Property="AllowsTransparency" Value="True">
+                <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="4"/>
+            </Trigger>
+            <Trigger Property="IsEditable" Value="True">
+                <Setter Property="IsTabStop" Value="False"/>
+                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+            </Trigger>
+            <Trigger Property="SelectedItem" Value="{x:Null}">
+                <Setter TargetName="ContentSite" Property="Content" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Text}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region   تمپلیت برای ComboBoxItem -->
+
+    <ControlTemplate x:Key="ComboBoxItemTemplate" TargetType="{x:Type ComboBoxItem}">
+        <Border x:Name="combItemBorder" Background="Transparent" BorderThickness="1" BorderBrush="Transparent" SnapsToDevicePixels="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Path x:Name="tickPath" Grid.Column="0" Visibility="Hidden"  Stroke="{DynamicResource combItem_MouseEnterColor}" 
+                StrokeThickness="1" Fill="{DynamicResource combItem_MouseEnterColor}" StrokeStartLineCap="Triangle" 
+                StrokeEndLineCap="Triangle" Data="{Binding Data, Source={StaticResource checkboxTickPath}}"/>
+                <ContentPresenter x:Name="combItemPresenter" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="tickPath" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="combItemPresenter" Property="TextBlock.Foreground" Value="{DynamicResource combItem_MouseEnterColor}"/>
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="combItemBorder" Property="BorderBrush" Value="{DynamicResource combItem_MouseEnterColor}"/>
+            </Trigger>
+            <Trigger Property="FlowDirection" Value="RightToLeft">
+                <Setter TargetName="tickPath" Property="FlowDirection" Value="LeftToRight"/>
+                <Setter TargetName="tickPath" Property="Margin" Value="0,0,5,0"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+    
+    <!--#region   مولفه های دیگر از تمپلیت برای ComboBox -->
+
+    <ControlTemplate x:Key="ComboBoxsToggleButtonTemplate" TargetType="{x:Type ToggleButton}">
+        <Grid x:Name="toggleGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="grid_FirstColumn" Width="*"/>
+                <ColumnDefinition x:Name="grid_SecondColumn" Width="20"/>
+            </Grid.ColumnDefinitions>
+            <Rectangle x:Name="comboboxRectangle" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" RadiusX="3" RadiusY="3" Fill="{TemplateBinding Background}" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{Binding RelativeSource={RelativeSource AncestorType={x:Type ComboBox}, Mode=FindAncestor}, Path=BorderThickness.Left}"/>
+            <Path x:Name="Arrow" Grid.Column="1" StrokeThickness="2" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" Stroke="{TemplateBinding BorderBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 5 5 L 10 0"/>
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter TargetName="comboboxRectangle" Property="Stroke" Value="{DynamicResource comb_Toggle_Border_MouseOverBrush}"/>
+                <Setter TargetName="comboboxRectangle" Property="Fill" Value="{DynamicResource comb_Toggle_Fill_MouseOverBrush}"/>
+                <Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource comb_Toggle_Border_MouseOverBrush}"/>
+            </Trigger>
+            <DataTrigger Binding="{Binding IsFocused, RelativeSource={RelativeSource AncestorType={x:Type ComboBox}}}" Value="True">
+                <Setter TargetName="comboboxRectangle" Property="Stroke" Value="{DynamicResource comb_Toggle_Border_MouseOverBrush}"/>
+                <Setter TargetName="comboboxRectangle" Property="Fill" Value="{DynamicResource comb_Toggle_Fill_MouseOverBrush}"/>
+            </DataTrigger>
+            <Trigger Property="IsChecked" Value="true">
+                <Setter TargetName="comboboxRectangle" Property="Fill" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}"/>
+                <Setter TargetName="comboboxRectangle" Property="Stroke" Value="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}"/>
+                <Setter TargetName="Arrow" Property="Stroke"  Value="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="comboboxRectangle" Property="Fill" Value="{DynamicResource DisabledBackgroundBrush}"/>
+                <Setter TargetName="comboboxRectangle" Property="Stroke" Value="{DynamicResource DisabledBorderBrush}"/>
+                <Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource DisabledForegroundBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+
+
+    <ControlTemplate x:Key="TextBoxOfComboBoxTemplate" TargetType="{x:Type TextBox}">
+        <Grid Background="{TemplateBinding Background}">
+            <Border x:Name="textBoxBorder" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="1" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0.8"/>
+            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ComboBox}, Path=VerticalContentAlignment}" HorizontalAlignment="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ComboBox}, Path=HorizontalContentAlignment}"  Margin="4,-2,0,0"/>
+        </Grid>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region   تمپلیت برای ScroolViewer -->
+
+    <ControlTemplate x:Key="ScrollBarLineButtonTemplate" TargetType="{x:Type RepeatButton}">
+        <Border x:Name="Border" Background="{DynamicResource scrollBackgroundBrush}">
+            <Path x:Name="Arrow" HorizontalAlignment="Center" VerticalAlignment="Center" Stroke="{DynamicResource scrollForgroundBrush}" StrokeThickness="2" Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"/>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource comb_Toggle_Border_MouseOverBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource scrollBar_LineButton_ClickedBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource scrollBarButton_DisabledBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+
+
+    <ControlTemplate x:Key="ScrollBarPageButtonTemplate" TargetType="{x:Type RepeatButton}">
+        <Border Name="Border"  Background="Transparent" />
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource scrollBarButton_DisabledBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+
+
+    <ControlTemplate x:Key="ScrollBarThumbTemplate" TargetType="{x:Type Thumb}">
+        <Border x:Name="thumbBorder" Background="{TemplateBinding Background}"/>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="thumbBorder" Property="Background" Value="{DynamicResource ScrollBar_Thumb_MouseOverBrush}"/>
+            </Trigger>
+            <Trigger Property="IsMouseCaptured" Value="True">
+                <Setter TargetName="thumbBorder" Property="Background" Value="{DynamicResource scrollBar_LineButton_ClickedBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+
+
+    <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition MaxHeight="18" />
+                <RowDefinition Height="0.00001*" />
+                <RowDefinition MaxHeight="18" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.RowSpan="3" Background="{DynamicResource scrollBackgroundBrush}" />
+
+            <RepeatButton Grid.Row="0" Style="{DynamicResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineUpCommand" Content="M 0 5 L 5 0 L 10 5"/>
+
+            <Track x:Name="PART_Track" Grid.Row="1" IsDirectionReversed="true">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Style="{DynamicResource ScrollBarPageButton}" Command="ScrollBar.PageUpCommand" />
+                </Track.DecreaseRepeatButton>
+
+                <Track.Thumb>
+                    <Thumb Style="{DynamicResource ScrollBarThumb}" Margin="1,0,1,0" Background="{DynamicResource scrollForgroundBrush}"/>
+                </Track.Thumb>
+
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Style="{DynamicResource ScrollBarPageButton}" Command="ScrollBar.PageDownCommand" />
+                </Track.IncreaseRepeatButton>
+            </Track>
+
+            <RepeatButton Grid.Row="2" Style="{DynamicResource ScrollBarLineButton}" Height="18" Command="ScrollBar.LineDownCommand" Content="M 0 0 L 5 5 L 10 0" />
+        </Grid>
+    </ControlTemplate>
+
+
+
+
+    <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="18" />
+                <ColumnDefinition Width="0.00001*" />
+                <ColumnDefinition MaxWidth="18" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.RowSpan="3" Background="{DynamicResource scrollBackgroundBrush}"/>
+            <RepeatButton Grid.Column="0" Style="{DynamicResource ScrollBarLineButton}" Width="18" Command="ScrollBar.LineLeftCommand" Content="M 5 0 L 0 5 L 5 10" />
+
+            <Track x:Name="PART_Track" Grid.Column="1" IsDirectionReversed="False">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Style="{DynamicResource ScrollBarPageButton}" Command="ScrollBar.PageLeftCommand" />
+                </Track.DecreaseRepeatButton>
+
+                <Track.Thumb>
+                    <Thumb Style="{DynamicResource ScrollBarThumb}" Margin="0,1,0,1" Background="{DynamicResource scrollForgroundBrush}"/>
+                </Track.Thumb>
+
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Style="{DynamicResource ScrollBarPageButton}" Command="ScrollBar.PageRightCommand" />
+                </Track.IncreaseRepeatButton>
+            </Track>
+
+            <RepeatButton Grid.Column="2" Style="{DynamicResource ScrollBarLineButton}" Width="18" Command="ScrollBar.LineRightCommand" Content="M 0 0 L 5 5 L 0 10" />
+        </Grid>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region   تمپلیت برای TabControl -->
+
+    <ControlTemplate x:Key="TabControlTemplate" TargetType="{x:Type TabControl}">
+        <Grid KeyboardNavigation.TabNavigation="Local" Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!--برای نمایشِ قسمتِ Header یا همون Tab Item مربوط به کنترل TabControl ، بجای
+                            استفاده از TabPanel ، میتونیم از ItemPresenter هم استفاده کنیم 
+                            اما TabPanel برای مدیریت آیتم یا همون هِدِر های TabControl بهتر هست-->
+            <!--<ItemsPresenter x:Name="ItemsPresenter" Grid.Row="0"/>-->
+            <!--تعیینِ پروپرتیِ IsItemsHost برای اینکه آیتم ها که در اینجا همون هِدِر ها یا همون TabItem ها هستن ، نمایش داده بشن یا نه ، ضروری هست-->
+            <Border Name="tabItemsBorder" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="1" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="2">
+                <TabPanel Name="tabItemsPanel" Background="Transparent" IsItemsHost="True" Margin="1" Panel.ZIndex="1" KeyboardNavigation.TabIndex="1"/>
+            </Border>
+
+            <ScrollViewer Name="tabContainerScrollViewer" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="1" Margin="0,4,0,0" Padding="{TemplateBinding Padding}" KeyboardNavigation.TabNavigation="Local" KeyboardNavigation.DirectionalNavigation="Contained" KeyboardNavigation.TabIndex="2" CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
+                <ContentPresenter Name="PART_SelectedContentHost" Margin="0" ContentSource="SelectedContent"/>
+            </ScrollViewer>
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="TabStripPlacement" Value="Right">
+                <Setter TargetName="tabItemsBorder" Property="Grid.Column" Value="2"/>
+                <Setter TargetName="tabItemsBorder" Property="Grid.Row" Value="0"/>
+                <Setter TargetName="tabItemsBorder" Property="Grid.ColumnSpan" Value="1"/>
+                <Setter TargetName="tabItemsBorder" Property="Grid.RowSpan" Value="3"/>
+
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.Column" Value="0"/>
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.Row" Value="0"/>
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.ColumnSpan" Value="2"/>
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.RowSpan" Value="3"/>
+
+                <Setter TargetName="tabContainerScrollViewer" Property="Margin" Value="0,0,4,0"/>
+            </Trigger>
+            <Trigger Property="TabStripPlacement" Value="Left">
+                <Setter TargetName="tabItemsBorder" Property="Grid.Column" Value="0"/>
+                <Setter TargetName="tabItemsBorder" Property="Grid.Row" Value="0"/>
+                <Setter TargetName="tabItemsBorder" Property="Grid.ColumnSpan" Value="1"/>
+                <Setter TargetName="tabItemsBorder" Property="Grid.RowSpan" Value="3"/>
+
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.Column" Value="1"/>
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.Row" Value="0"/>
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.ColumnSpan" Value="2"/>
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.RowSpan" Value="3"/>
+
+                <Setter TargetName="tabContainerScrollViewer" Property="Margin" Value="4,0,0,0"/>
+            </Trigger>
+            <Trigger Property="TabStripPlacement" Value="Bottom">
+                <Setter TargetName="tabItemsBorder" Property="Grid.Column" Value="0"/>
+                <Setter TargetName="tabItemsBorder" Property="Grid.Row" Value="2"/>
+                <Setter TargetName="tabItemsBorder" Property="Grid.ColumnSpan" Value="3"/>
+                <Setter TargetName="tabItemsBorder" Property="Grid.RowSpan" Value="1"/>
+
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.Column" Value="0"/>
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.Row" Value="0"/>
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.ColumnSpan" Value="3"/>
+                <Setter TargetName="tabContainerScrollViewer" Property="Grid.RowSpan" Value="2"/>
+
+                <Setter TargetName="tabContainerScrollViewer" Property="Margin" Value="0,0,0,4"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="tabItemsBorder" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}"/>
+                <Setter TargetName="tabItemsBorder" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}"/>
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition SourceName="tabItemsPanel" Property="IsKeyboardFocusWithin" Value="True"/>
+                    <Condition SourceName="PART_SelectedContentHost" Property="IsKeyboardFocusWithin" Value="False"/>
+                </MultiTrigger.Conditions>
+                <MultiTrigger.Setters>
+                    <Setter TargetName="tabItemsBorder" Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Foreground}"/>
+                </MultiTrigger.Setters>
+            </MultiTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+    
+    <!--#region   تمپلیت برای TabItem -->
+
+    <ControlTemplate x:Key="TabItemTemplate" TargetType="{x:Type TabItem}">
+        <Border Name="tabItemBorder" Background="{TemplateBinding Background}" Width="{TemplateBinding ActualWidth}" Height="{TemplateBinding ActualHeight}" Padding="{TemplateBinding Padding}" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="Transparent" CornerRadius="2">
+            <ContentPresenter Name="ContentSite" TextBlock.Foreground="{TemplateBinding Foreground}" ContentSource="Header" RecognizesAccessKey="True" HorizontalAlignment="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabControl},Mode=FindAncestor}, Path=HorizontalContentAlignment}" VerticalAlignment="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabControl}, Mode=FindAncestor}, Path=VerticalContentAlignment}" />
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="tabItemBorder" Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=BorderBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="ContentSite" Property="TextBlock.Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsEnabled" Value="False"/>
+                    <Condition Property="IsSelected" Value="True"/>
+                </MultiTrigger.Conditions>
+                <MultiTrigger.Setters>
+                    <Setter TargetName="tabItemBorder" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}"/>
+                </MultiTrigger.Setters>
+            </MultiTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+    
+    <!--#region   تمپلیت برای ListBoxItem -->
+
+    <ControlTemplate x:Key="ListBoxItemTemplate" TargetType="{x:Type ListBoxItem}">
+        <Border x:Name="listItemBorder" Background="Transparent" BorderThickness="1" BorderBrush="Transparent" SnapsToDevicePixels="True">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Path x:Name="tickPath" Grid.Column="0" Visibility="Hidden"  Stroke="{DynamicResource combItem_MouseEnterColor}" StrokeThickness="1" Fill="{DynamicResource combItem_MouseEnterColor}" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" Data="{Binding Data, Source={StaticResource checkboxTickPath}}"/>
+                <ContentPresenter x:Name="listItemPresenter" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="tickPath" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="listItemPresenter" Property="TextBlock.Foreground" Value="{DynamicResource combItem_MouseEnterColor}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="listItemBorder" Property="BorderBrush" Value="{DynamicResource combItem_MouseEnterColor}"/>
+            </Trigger>
+            <Trigger Property="FlowDirection" Value="RightToLeft">
+                <Setter TargetName="tickPath" Property="FlowDirection" Value="LeftToRight"/>
+                <Setter TargetName="tickPath" Property="Margin" Value="0,0,5,0"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="tickPath" Property="Stroke" Value="{DynamicResource listBoxItem_DisabledBrush}"/>
+                <Setter TargetName="listItemPresenter" Property="TextBlock.Foreground" Value="{DynamicResource listBoxItem_DisabledBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+    
+    <!--#region  تمپلیت برای CheckBox -->
+
+    <ControlTemplate x:Key="CheckBoxTemplate" TargetType="{x:Type CheckBox}">
+        <!--برای این ، به پروپرتیِ Background شی Grid مقدار میدیم تا null نباشه وگرنه مشکل Hit Test بوجود میاد و در پشت زمینه ی خالیِ Border اگه کلیک شه ، تیک ای زده نمیشه-->
+        <Grid Background="{TemplateBinding Background}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Name="checkShapeGrid" Grid.Column="0" Height="16" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                <Border Name="checkBorder" Grid.Column="0" Background="Transparent"  Width="16" Height="16" CornerRadius="2" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                    <Grid>
+                        <Path x:Name="tickPath" Visibility="Hidden"  Stroke="{TemplateBinding BorderBrush}" StrokeThickness="1" Fill="{TemplateBinding BorderBrush}" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" Data="{Binding Source={StaticResource checkboxTickPath}, Path=Data }"/>
+                        <Border x:Name="indeterminatePath" Visibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center" Width="8" Height="8" Background="{TemplateBinding BorderBrush}" BorderBrush="Transparent" CornerRadius="1"/>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- کنترل contentPaddingBorder برای تنظیم Padding برای ContentPresenter قرار داده شد چون ContentPresenter ، Padding نداره .  چون به HitTesting برای contentPaddingBorder نیاز نداریم ، یعنی نیاز نداریم که وقتی موس روی این کنترل میاد ، موس را کپچر کنه ، Background و BorderBrush ئه این کنترل ، را باید Null قرار بدیم . نه اینکه Transparent قرار بدیم .-->
+            <Border Name="contentPaddingBorder"  Grid.Column="1" Padding="{TemplateBinding Padding}" Background="{x:Null}" BorderBrush="{x:Null}">
+                <ContentPresenter Name="checkBoxContent" Margin="4, -2, 0, 0" TextBlock.Foreground="{TemplateBinding Foreground}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True"/>
+            </Border>
+
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter  TargetName="tickPath" Property="Visibility" Value="Visible"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="{x:Null}">
+                <Setter TargetName="indeterminatePath" Property="Visibility" Value="Visible"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter  TargetName="checkBorder" Property="BorderBrush" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+                <Setter  TargetName="tickPath" Property="Stroke" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+                <Setter  TargetName="tickPath" Property="Fill" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+                <Setter TargetName="indeterminatePath" Property="Background" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+            </Trigger>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter  TargetName="checkBorder" Property="BorderBrush" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+                <Setter  TargetName="tickPath" Property="Stroke" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+                <Setter  TargetName="tickPath" Property="Fill" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+                <Setter TargetName="indeterminatePath" Property="Background" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="checkBorder" Property="BorderBrush" Value="{DynamicResource checkBox_DisabledBrush}"/>
+                <Setter TargetName="tickPath" Property="Stroke" Value="{DynamicResource checkBox_DisabledBrush}"/>
+                <Setter TargetName="tickPath" Property="Fill" Value="{DynamicResource checkBox_DisabledBrush}"/>
+                <Setter TargetName="indeterminatePath" Property="Background" Value="{DynamicResource checkBox_DisabledBrush}"/>
+                <Setter TargetName="checkBoxContent" Property="TextBlock.Foreground" Value="{DynamicResource checkBox_DisabledBrush}"/>
+            </Trigger>
+            <Trigger Property="FlowDirection" Value="RightToLeft">
+                <Setter TargetName="tickPath" Property="FlowDirection" Value="LeftToRight"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  تمپلیت برای RadioButton -->
+
+    <ControlTemplate x:Key="RadioButtonTemplate" TargetType="{x:Type RadioButton}">
+        <Grid Background="{TemplateBinding Background}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Name="checkShapeGrid" Grid.Column="0" Height="16" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                <Ellipse Name="borderEllipse" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=BorderThickness.Left}" Stroke="{TemplateBinding BorderBrush}" HorizontalAlignment="Stretch" />
+                <Ellipse Name="checkEllipse" Margin="4" Fill="{TemplateBinding BorderBrush}" Visibility="Hidden"/>
+            </Grid>
+
+            <!-- کنترل contentPaddingBorder برای تنظیم Padding برای ContentPresenter قرار داده شد چون ContentPresenter ، Padding نداره .  چون به HitTesting برای contentPaddingBorder نیاز نداریم ، یعنی نیاز نداریم که وقتی موس روی این کنترل میاد ، موس را کپچر کنه ، Background و BorderBrush ئه این کنترل ، را باید Null قرار بدیم . نه اینکه Transparent قرار بدیم .-->
+            <Border Name="contentPaddingBorder"  Grid.Column="1" Padding="{TemplateBinding Padding}" Background="{x:Null}" BorderBrush="{x:Null}">
+                <ContentPresenter Name="radioButtonContent" TextBlock.Foreground="{TemplateBinding Foreground}" Margin="4,-2,0,0"  RecognizesAccessKey="True" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            </Border>
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="checkEllipse" Property="Visibility" Value="Visible"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter TargetName="borderEllipse" Property="Stroke" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+                <Setter TargetName="checkEllipse" Property="Fill" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+            </Trigger>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter TargetName="borderEllipse" Property="Stroke" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+                <Setter TargetName="checkEllipse" Property="Fill" Value="{DynamicResource checkBorderBackground_MouseOver}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="borderEllipse" Property="Stroke" Value="{DynamicResource checkBox_DisabledBrush}"/>
+                <Setter TargetName="checkEllipse" Property="Fill" Value="{DynamicResource checkBox_DisabledBrush}"/>
+                <Setter TargetName="radioButtonContent" Property="TextBlock.Foreground" Value="{DynamicResource checkBox_DisabledBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  تمپلیت برای DoubleUpTime و کنترل های مربوطه -->
+
+    <ControlTemplate x:Key="UpDownSpinerButtonTemplate" TargetType="{x:Type RepeatButton}">
+        <Grid Background="Transparent">
+            <Path Name="spinnerArrow" HorizontalAlignment="Center" VerticalAlignment="Center" Stroke="{TemplateBinding Foreground}" StrokeThickness="2" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle" Data="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"/>
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="spinnerArrow" Property="Stroke" Value="{DynamicResource numUpDown_spinnerArrow_MouseOverBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="spinnerArrow" Property="Stroke" Value="{DynamicResource numUpDown_spinnerArrow_MouseClickBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="spinnerArrow" Property="Stroke" Value="{DynamicResource UpDown_DisableForegroundBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+
+
+    <ControlTemplate x:Key="EditButtonSpinnerTemplate" TargetType="{x:Type ToolKit:ButtonSpinner}">
+
+        <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True" CornerRadius="4">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Name="firstContentColumn" Width="*"/>
+                    <ColumnDefinition x:Name="secondContentColumn" Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <ContentPresenter x:Name="contentPresenter" Content="{TemplateBinding Content}" Focusable="False" HorizontalAlignment="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToolKit:DoubleUpDown}, Mode=FindAncestor}, Path=HorizontalContentAlignment}" VerticalAlignment="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToolKit:DoubleUpDown}, Mode=FindAncestor}, Path=VerticalContentAlignment}" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+                <Grid x:Name="gridContent" Grid.Column="1" Width="23">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <RepeatButton x:Name="PART_IncreaseButton" Content="M 0 5 L 5 0 L 10 5" IsTabStop="{TemplateBinding IsTabStop}" Style="{DynamicResource UpDownSpinerButtonStyle}" Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToolKit:DoubleUpDown}, Mode=FindAncestor}, Path=Foreground}"/>
+                    <RepeatButton x:Name="PART_DecreaseButton" Grid.Row="1" Content="M 0 0 L 5 5 L 10 0" IsTabStop="{TemplateBinding IsTabStop}" Style="{DynamicResource UpDownSpinerButtonStyle}" Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type ToolKit:DoubleUpDown}, Mode=FindAncestor}, Path=Foreground}"/>
+                </Grid>
+
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="ShowButtonSpinner" Value="False">
+                <Setter TargetName="gridContent" Property="Visibility" Value="Hidden"/>
+                <Setter TargetName="gridContent" Property="Width" Value="0"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {ComponentResourceKey ResourceId=ControlMouseOverBorderKey, TypeInTargetAssembly={x:Type ToolKitThemes:ResourceKeys}}}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource {ComponentResourceKey ResourceId=ControlSelectedBorderKey, TypeInTargetAssembly={x:Type ToolKitThemes:ResourceKeys}}}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource UpDown_DisableBorderBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" SourceName="PART_IncreaseButton" Value="False">
+                <Setter TargetName="PART_IncreaseButton" Property="ContentTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <Path Data="M0,5L4.5,0.5 9,5 6,5 4.5,3.5 3,5z" Focusable="False" Fill="{DynamicResource {ComponentResourceKey ResourceId=GlyphDisabledForegroundKey, TypeInTargetAssembly={x:Type ToolKitThemes:ResourceKeys}}}" HorizontalAlignment="Center" Height="5" SnapsToDevicePixels="True" VerticalAlignment="Center" Width="9"/>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+            <Trigger Property="IsEnabled" SourceName="PART_DecreaseButton" Value="False">
+                <Setter TargetName="PART_DecreaseButton" Property="ContentTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <Path Data="M0,0L3,0 4.5,1.5 6,0 9,0 4.5,4.5z" Focusable="False" Fill="{DynamicResource {ComponentResourceKey ResourceId=GlyphDisabledForegroundKey, TypeInTargetAssembly={x:Type ToolKitThemes:ResourceKeys}}}" HorizontalAlignment="Center" Height="5" SnapsToDevicePixels="True" VerticalAlignment="Center" Width="9"/>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+            <Trigger Property="ButtonSpinnerLocation" Value="Left">
+                <Setter TargetName="firstContentColumn" Property="Width" Value="Auto"/>
+                <Setter TargetName="secondContentColumn" Property="Width" Value="*"/>
+                <Setter TargetName="contentPresenter" Property="Grid.Column" Value="1"/>
+                <Setter TargetName="gridContent" Property="Grid.Column" Value="0"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+
+
+    <ControlTemplate x:Key="ToolKit_DoubleUpDownTemplate" TargetType="{x:Type ToolKit:DoubleUpDown}">
+        <ToolKit:ButtonSpinner x:Name="PART_Spinner" Style="{DynamicResource EditButtonSpinnerStyle}" AllowSpin="{Binding AllowSpin, RelativeSource={RelativeSource TemplatedParent}}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" ButtonSpinnerLocation="{Binding ButtonSpinnerLocation, RelativeSource={RelativeSource TemplatedParent}}" Background="{TemplateBinding Background}" HorizontalContentAlignment="Stretch" IsTabStop="False" ShowButtonSpinner="{Binding ShowButtonSpinner, RelativeSource={RelativeSource TemplatedParent}}" VerticalContentAlignment="Stretch">
+            <ToolKit:WatermarkTextBox x:Name="PART_TextBox" AutoMoveFocus="{Binding AutoMoveFocus, RelativeSource={RelativeSource TemplatedParent}}" AutoSelectBehavior="{Binding AutoSelectBehavior, RelativeSource={RelativeSource TemplatedParent}}" AcceptsReturn="False" BorderThickness="0" Background="Transparent" ContextMenu="{TemplateBinding ContextMenu}" Foreground="{TemplateBinding Foreground}" FontWeight="{TemplateBinding FontWeight}" FontStyle="{TemplateBinding FontStyle}" FontStretch="{TemplateBinding FontStretch}" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" IsTabStop="True" IsUndoEnabled="True" MinWidth="20" MaxLength="{Binding MaxLength, RelativeSource={RelativeSource TemplatedParent}}"  Padding="{TemplateBinding Padding}" TextAlignment="{Binding TextAlignment, RelativeSource={RelativeSource TemplatedParent}}" TextWrapping="NoWrap" TabIndex="{TemplateBinding TabIndex}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" WatermarkTemplate="{Binding WatermarkTemplate, RelativeSource={RelativeSource TemplatedParent}}" Watermark="{Binding Watermark, RelativeSource={RelativeSource TemplatedParent}}"/>
+        </ToolKit:ButtonSpinner>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="PART_Spinner" Property="BorderBrush" Value="{DynamicResource {ComponentResourceKey ResourceId=ControlMouseOverBorderKey, TypeInTargetAssembly={x:Type ToolKitThemes:ResourceKeys}}}"/>
+            </Trigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding IsReadOnly, RelativeSource={RelativeSource Self}}" Value="False"/>
+                    <Condition Binding="{Binding AllowTextInput, RelativeSource={RelativeSource Self}}" Value="False"/>
+                </MultiDataTrigger.Conditions>
+                <Setter TargetName="PART_TextBox" Property="IsReadOnly" Value="True"/>
+            </MultiDataTrigger>
+            <DataTrigger Binding="{Binding IsReadOnly, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter TargetName="PART_TextBox" Property="IsReadOnly" Value="True"/>
+            </DataTrigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter TargetName="PART_Spinner" Property="BorderBrush" Value="{DynamicResource {ComponentResourceKey ResourceId=ControlSelectedBorderKey, TypeInTargetAssembly={x:Type ToolKitThemes:ResourceKeys}}}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="PART_TextBox" Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter TargetName="PART_TextBox" Property="FocusManager.FocusedElement" Value="{Binding ElementName=PART_TextBox}"/>
+            </Trigger>
+            <Trigger Property="Focusable" Value="False">
+                <Setter TargetName="PART_TextBox" Property="Focusable" Value="False"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  تمپلیت برای ShapeTextButton  -->
+
+    <CustomControls:ShapeTextButton x:Key="HasValue_Converter"/>
+
+    <ControlTemplate x:Key="ShapeTextButtonTemplate" TargetType="{x:Type CustomControls:ShapeTextButton}">
+        <Grid Name="MainGrid" Background="Transparent">
+            <Path Name="Shape" Focusable="False"
+                    Data="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.Data}"
+                    Margin="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.Margin}"  
+                    HorizontalAlignment="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.HorizontalAlignment}"
+                    VerticalAlignment="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.VerticalAlignment}"
+                    Stroke="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.Stroke}" 
+                    StrokeThickness="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.StrokeThickness}" 
+                    Fill="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.Fill}" 
+                    StrokeStartLineCap="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.StrokeStartLineCap}"
+                    StrokeEndLineCap="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.StrokeEndLineCap}"
+                    StrokeLineJoin="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.StrokeLineJoin}"
+                    StrokeDashOffset="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.StrokeDashOffset}"
+                    StrokeDashCap="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.StrokeDashCap}"
+                    Stretch="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.Stretch}"
+                    Width="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.Width}"
+                    Height="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.Height}"
+                    MinWidth="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.MinWidth}"
+                    MinHeight="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.MinHeight}"
+                    LayoutTransform="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.LayoutTransform}"
+                    RenderTransform="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.RenderTransform}"
+                    RenderTransformOrigin="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.RenderTransformOrigin}"
+                    FlowDirection="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.FlowDirection}"/>
+            <ContentPresenter x:Name="ContentPresenter" TextBlock.Foreground="{TemplateBinding Foreground}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <!-- ////Single GetContentBrush_ForWhichButtonShapeProperty Properties///// -->
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Stroke">
+                <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Foreground}"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Fill">
+                <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Foreground}"/>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Both">
+                <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Foreground}"/>
+                <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Foreground}"/>
+            </DataTrigger>
+
+            <!-- ////MouseOver Trigger///// -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsMouseOver}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseEnterButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Data" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Data}"/>
+                    <Setter TargetName="Shape" Property="Margin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Margin}"/>
+                    <Setter TargetName="Shape" Property="HorizontalAlignment" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.HorizontalAlignment}"/>
+                    <Setter TargetName="Shape" Property="VerticalAlignment" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.VerticalAlignment}"/>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Stroke}"/>
+                    <Setter TargetName="Shape" Property="StrokeThickness" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeThickness}"/>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Fill}"/>
+                    <Setter TargetName="Shape" Property="StrokeStartLineCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeStartLineCap}"/>
+                    <Setter TargetName="Shape" Property="StrokeEndLineCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeEndLineCap}"/>
+                    <Setter TargetName="Shape" Property="StrokeLineJoin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeLineJoin}"/>
+                    <Setter TargetName="Shape" Property="StrokeDashOffset" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeDashOffset}"/>
+                    <Setter TargetName="Shape" Property="StrokeDashCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeDashCap}"/>
+                    <Setter TargetName="Shape" Property="Stretch" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Stretch}"/>
+                    <Setter TargetName="Shape" Property="Width" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Width}"/>
+                    <Setter TargetName="Shape" Property="Height" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Height}"/>
+                    <Setter TargetName="Shape" Property="MinWidth" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.MinWidth}"/>
+                    <Setter TargetName="Shape" Property="MinHeight" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.MinHeight}"/>
+                    <Setter TargetName="Shape" Property="LayoutTransform" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.LayoutTransform}"/>
+                    <Setter TargetName="Shape" Property="RenderTransform" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.RenderTransform}"/>
+                    <Setter TargetName="Shape" Property="RenderTransformOrigin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.RenderTransformOrigin}"/>
+                    <Setter TargetName="Shape" Property="FlowDirection" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.FlowDirection}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <!--  زمانی که موس روی کنترل هست و مقدار GetContentBrush_ForWhichButtonShapeProperty هم true هست ، علاوه بر کد قبلی ، کدهای Setter ئه مربوط به این بخش را هم اجرا کنه .
+            یعنی دقت کنید که در تریگرها ، هر چند تا شرط ای که درست باشه ، همه ی اون تریگرها اجرا میشن واسه ی همین ، شرط هایی که اضافه میشن به تریگر را در خط های پایین تر مینویسیم . 
+            مثل همین اضافه شدن شرط پروپرتی GetContentBrush_ForWhichButtonShapeProperty  در تریگر پایین ، نسبت به تریگر قبلی     -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsMouseOver}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseEnterButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Stroke"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsMouseOver}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseEnterButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Fill"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsMouseOver}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseEnterButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Both"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterContentBrush}"/>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+
+            
+            <!--   Keyboard Focus Trriger
+            یک تریگرِ دیگه ی مربوط به فوکوسِ کیبرد ، در قسمت ContentBrush Properties نوشته شد.   -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsKeyboardFocused}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseEnterButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Data" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Data}"/>
+                    <Setter TargetName="Shape" Property="Margin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Margin}"/>
+                    <Setter TargetName="Shape" Property="HorizontalAlignment" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.HorizontalAlignment}"/>
+                    <Setter TargetName="Shape" Property="VerticalAlignment" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.VerticalAlignment}"/>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Stroke}"/>
+                    <Setter TargetName="Shape" Property="StrokeThickness" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeThickness}"/>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Fill}"/>
+                    <Setter TargetName="Shape" Property="StrokeStartLineCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeStartLineCap}"/>
+                    <Setter TargetName="Shape" Property="StrokeEndLineCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeEndLineCap}"/>
+                    <Setter TargetName="Shape" Property="StrokeLineJoin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeLineJoin}"/>
+                    <Setter TargetName="Shape" Property="StrokeDashOffset" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeDashOffset}"/>
+                    <Setter TargetName="Shape" Property="StrokeDashCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.StrokeDashCap}"/>
+                    <Setter TargetName="Shape" Property="Stretch" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Stretch}"/>
+                    <Setter TargetName="Shape" Property="Width" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Width}"/>
+                    <Setter TargetName="Shape" Property="Height" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.Height}"/>
+                    <Setter TargetName="Shape" Property="MinWidth" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.MinWidth}"/>
+                    <Setter TargetName="Shape" Property="MinHeight" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.MinHeight}"/>
+                    <Setter TargetName="Shape" Property="LayoutTransform" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.LayoutTransform}"/>
+                    <Setter TargetName="Shape" Property="RenderTransform" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.RenderTransform}"/>
+                    <Setter TargetName="Shape" Property="RenderTransformOrigin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.RenderTransformOrigin}"/>
+                    <Setter TargetName="Shape" Property="FlowDirection" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterButtonShape.FlowDirection}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsKeyboardFocused}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseEnterButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Stroke"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsKeyboardFocused}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseEnterButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Fill"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsKeyboardFocused}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseEnterButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Both"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterContentBrush}"/>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+
+
+            <!-- ////MouseLeftButtonDown Trigger///// -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsMouseLeftButtonDown}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseDownButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Data" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.Data}"/>
+                    <Setter TargetName="Shape" Property="Margin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.Margin}"/>
+                    <Setter TargetName="Shape" Property="HorizontalAlignment" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.HorizontalAlignment}"/>
+                    <Setter TargetName="Shape" Property="VerticalAlignment" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.VerticalAlignment}"/>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.Stroke}"/>
+                    <Setter TargetName="Shape" Property="StrokeThickness" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.StrokeThickness}"/>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.Fill}"/>
+                    <Setter TargetName="Shape" Property="StrokeStartLineCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.StrokeStartLineCap}"/>
+                    <Setter TargetName="Shape" Property="StrokeEndLineCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.StrokeEndLineCap}"/>
+                    <Setter TargetName="Shape" Property="StrokeLineJoin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.StrokeLineJoin}"/>
+                    <Setter TargetName="Shape" Property="StrokeDashOffset" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.StrokeDashOffset}"/>
+                    <Setter TargetName="Shape" Property="StrokeDashCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.StrokeDashCap}"/>
+                    <Setter TargetName="Shape" Property="Stretch" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.Stretch}"/>
+                    <Setter TargetName="Shape" Property="Width" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.Width}"/>
+                    <Setter TargetName="Shape" Property="Height" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.Height}"/>
+                    <Setter TargetName="Shape" Property="MinWidth" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.MinWidth}"/>
+                    <Setter TargetName="Shape" Property="MinHeight" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.MinHeight}"/>
+                    <Setter TargetName="Shape" Property="LayoutTransform" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.LayoutTransform}"/>
+                    <Setter TargetName="Shape" Property="RenderTransform" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.RenderTransform}"/>
+                    <Setter TargetName="Shape" Property="RenderTransformOrigin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.RenderTransformOrigin}"/>
+                    <Setter TargetName="Shape" Property="FlowDirection" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownButtonShape.FlowDirection}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsMouseLeftButtonDown}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseDownButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Stroke"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsMouseLeftButtonDown}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseDownButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Fill"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsMouseLeftButtonDown}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseDownButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Both"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownContentBrush}"/>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <!-- ////IsEnabled Trigger///// -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsEnabled}" Value="false"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ControlDisabledButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Data" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.Data}"/>
+                    <Setter TargetName="Shape" Property="Margin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.Margin}"/>
+                    <Setter TargetName="Shape" Property="HorizontalAlignment" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.HorizontalAlignment}"/>
+                    <Setter TargetName="Shape" Property="VerticalAlignment" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.VerticalAlignment}"/>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.Stroke}"/>
+                    <Setter TargetName="Shape" Property="StrokeThickness" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.StrokeThickness}"/>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.Fill}"/>
+                    <Setter TargetName="Shape" Property="StrokeStartLineCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.StrokeStartLineCap}"/>
+                    <Setter TargetName="Shape" Property="StrokeEndLineCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.StrokeEndLineCap}"/>
+                    <Setter TargetName="Shape" Property="StrokeLineJoin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.StrokeLineJoin}"/>
+                    <Setter TargetName="Shape" Property="StrokeDashOffset" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.StrokeDashOffset}"/>
+                    <Setter TargetName="Shape" Property="StrokeDashCap" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.StrokeDashCap}"/>
+                    <Setter TargetName="Shape" Property="Stretch" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.Stretch}"/>
+                    <Setter TargetName="Shape" Property="Width" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.Width}"/>
+                    <Setter TargetName="Shape" Property="Height" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.Height}"/>
+                    <Setter TargetName="Shape" Property="MinWidth" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.MinWidth}"/>
+                    <Setter TargetName="Shape" Property="MinHeight" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.MinHeight}"/>
+                    <Setter TargetName="Shape" Property="LayoutTransform" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.LayoutTransform}"/>
+                    <Setter TargetName="Shape" Property="RenderTransform" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.RenderTransform}"/>
+                    <Setter TargetName="Shape" Property="RenderTransformOrigin" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.RenderTransformOrigin}"/>
+                    <Setter TargetName="Shape" Property="FlowDirection" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledButtonShape.FlowDirection}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsEnabled}" Value="false"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ControlDisabledButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Stroke"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsEnabled}" Value="false"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ControlDisabledButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Fill"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource  Mode=Self}, Path=IsEnabled}" Value="false"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ControlDisabledButtonShape, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=GetContentBrush_ForWhichButtonShapeProperty}" Value="Both"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="Shape" Property="Stroke" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledContentBrush}"/>
+                    <Setter TargetName="Shape" Property="Fill" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+            <!-- ////ContentBrush Properties///// -->
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseEnterContentBrush, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="ContentPresenter" Property="TextBlock.Foreground" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsKeyboardFocused}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseEnterContentBrush, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="ContentPresenter" Property="TextBlock.Foreground" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseEnterContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseLeftButtonDown}" Value="true"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=MouseDownContentBrush, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="ContentPresenter" Property="TextBlock.Foreground" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MouseDownContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsEnabled}" Value="false"/>
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=ControlDisabledContentBrush, Converter={StaticResource HasValue_Converter}}" Value="true"/>
+                </MultiDataTrigger.Conditions>
+                <MultiDataTrigger.Setters>
+                    <Setter TargetName="ContentPresenter" Property="TextBlock.Foreground" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ControlDisabledContentBrush}"/>
+                </MultiDataTrigger.Setters>
+            </MultiDataTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  تمپلیت برای Label  -->
+
+    <ControlTemplate x:Key="LabelTemplate" TargetType="{x:Type Label}">
+        <Border Name="MainBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+            <ContentPresenter Name="ContentPresenter" TextBlock.Foreground="{TemplateBinding Foreground}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="ContentPresenter" Property="TextBlock.Foreground" Value="{DynamicResource Label_DisabledBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    
+    <!--#endregion-->
+
+
+
+
+    <!--#region  تمپلیت برای ToolTip  -->
+
+    <ToolTipsValueConverter:ToolTipsRecBoundMultiValueConverter x:Key="ToolTipsRecBound_MultiValueConverter"/>
+
+    <ToolTipsValueConverter:ToolTipsTrianglePointValueConverter x:Key="ToolTipsTrianglePoint_ValueConverter"/>
+
+    <ToolTipsValueConverter:ToolTipsPlacementValueConverter x:Key="ToolTipsPlacement_ValueConverter"/>
+
+    <ControlTemplate x:Key="ToolTipTemplate" TargetType="{x:Type ToolTip}">
+        <Grid Name="MainGrid" Background="Transparent">
+            <Path Name="BalloonPath" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=BorderThickness.Left}" Fill="{TemplateBinding Background}">
+                <Path.Data>
+                    <CombinedGeometry GeometryCombineMode="Union">
+                        <CombinedGeometry.Geometry1>
+                            <PathGeometry>
+                                <PathFigure StartPoint="10, 1">
+                                    <LineSegment Point="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ActualHeight, Converter={StaticResource ToolTipsTrianglePoint_ValueConverter}, ConverterParameter=10}"/>
+                                    <LineSegment Point="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=ActualHeight, Converter={StaticResource ToolTipsTrianglePoint_ValueConverter}, ConverterParameter=20}"/>
+                                </PathFigure>
+                            </PathGeometry>
+                        </CombinedGeometry.Geometry1>
+
+                        <CombinedGeometry.Geometry2>
+                            <RectangleGeometry RadiusX="5" RadiusY="5">
+                                <RectangleGeometry.Rect>
+                                    <MultiBinding Converter="{StaticResource ToolTipsRecBound_MultiValueConverter}">
+                                        <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="ActualWidth"/>
+                                        <Binding RelativeSource="{RelativeSource Mode=TemplatedParent}" Path="ActualHeight"/>
+                                    </MultiBinding>
+                                </RectangleGeometry.Rect>
+                            </RectangleGeometry>
+                        </CombinedGeometry.Geometry2>
+                    </CombinedGeometry>
+                </Path.Data>
+            </Path>
+
+            <!--   این Border برای زمانی نمایش داده میشه که در تریگر ، مقدار پروپرتیِ Placement ئه Tooltip ، حالتی بجز مقدار Mouse یا Top یا Down باشه . مثلا اگه مقدارش Right یا Left یا Center باشه ، نمایش داده میشه .
+                در اون صورت ، با نمایش دادن این Border در تریگر ، نمایشِ ، نمایش المنت های BalloonPath و Content پنهان میشن.   -->
+            <Border Name="PlacementTriggerBorder" Visibility="Hidden"  BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" CornerRadius="5"/>
+
+            <ContentPresenter Name="Content" Margin="{TemplateBinding Padding}" TextBlock.Foreground="{TemplateBinding Foreground}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="Placement" Value="Top">
+                <Setter TargetName="BalloonPath" Property="LayoutTransform">
+                    <Setter.Value>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1" ScaleX="1"/>
+                        </TransformGroup>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Placement, Converter={StaticResource ToolTipsPlacement_ValueConverter}}" Value="true">
+                <Setter TargetName="PlacementTriggerBorder" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="BalloonPath" Property="Visibility" Value="Hidden"/>
+            </DataTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  تمپلیت برای دکمه های درون MessageBox  -->
+
+    
+    <SolidColorBrush x:Key="MessageBoxsButtonTemplate_IsMouseOver_BorderBrushForeground" Color="DeepSkyBlue"/>
+
+    
+
+    <ControlTemplate x:Key="MessageBoxsButtonTemplate" TargetType="{x:Type Button}">
+        <Border Name="MainBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+            <ContentPresenter Name="Content" TextBlock.Foreground="{TemplateBinding Foreground}" Margin="{TemplateBinding Padding}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter TargetName="MainBorder" Property="BorderBrush" Value="{StaticResource MessageBoxsButtonTemplate_IsMouseOver_BorderBrushForeground}"/>
+                <Setter TargetName="Content" Property="TextBlock.Foreground" Value="{StaticResource MessageBoxsButtonTemplate_IsMouseOver_BorderBrushForeground}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="true">
+                <Setter TargetName="MainBorder" Property="BorderBrush" Value="{StaticResource MessageBoxsButtonTemplate_IsMouseOver_BorderBrushForeground}"/>
+                <Setter TargetName="Content" Property="TextBlock.Foreground" Value="{StaticResource MessageBoxsButtonTemplate_IsMouseOver_BorderBrushForeground}"/>
+            </Trigger>
+            <EventTrigger RoutedEvent="PreviewMouseLeftButtonDown">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation Storyboard.TargetName="MainBorder" 
+                            Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" 
+                            To="#FF0096FF" 
+                            Duration="0:0:0"/>
+                        <ColorAnimation Storyboard.TargetName="Content" 
+                            Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)" 
+                            To="#FF0096FF" 
+                            Duration="0:0:0"/>
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    
+    
+    <!--#endregion-->
+
+
+
+
+    <!--#region  تمپلیت برای ListView و المنت های مربوطه -->
+
+
+    <ControlTemplate x:Key="ListViewScrollViewerTemplate" TargetType="{x:Type ScrollViewer}">
+        <Grid Background="{TemplateBinding Background}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <DockPanel Margin="{TemplateBinding Padding}">
+                <ScrollViewer DockPanel.Dock="Top" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Focusable="false">
+                    <GridViewHeaderRowPresenter Margin="2,0"
+                                          Columns="{Binding Path=TemplatedParent.View.Columns, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ColumnHeaderContainerStyle="{Binding Path=TemplatedParent.View.ColumnHeaderContainerStyle, 
+                                            RelativeSource={RelativeSource TemplatedParent}}"
+                                          ColumnHeaderTemplate="{Binding Path=TemplatedParent.View.ColumnHeaderTemplate, 
+                                            RelativeSource={RelativeSource TemplatedParent}}"
+                                          ColumnHeaderTemplateSelector="{Binding Path=TemplatedParent.View.ColumnHeaderTemplateSelector, 
+                                            RelativeSource={RelativeSource TemplatedParent}}"
+                                          AllowsColumnReorder="{Binding Path=TemplatedParent.View.AllowsColumnReorder, 
+                                            RelativeSource={RelativeSource TemplatedParent}}"
+                                          ColumnHeaderContextMenu="{Binding Path=TemplatedParent.View.ColumnHeaderContextMenu, 
+                                            RelativeSource={RelativeSource TemplatedParent}}"
+                                          ColumnHeaderToolTip="{Binding Path=TemplatedParent.View.ColumnHeaderToolTip, 
+                                            RelativeSource={RelativeSource TemplatedParent}}"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                </ScrollViewer>
+
+                <ScrollContentPresenter Name="PART_ScrollContentPresenter"
+                                    KeyboardNavigation.DirectionalNavigation="Local"
+                                    CanContentScroll="True"
+                                    CanHorizontallyScroll="False"
+                                    CanVerticallyScroll="False" />
+            </DockPanel>
+
+            <ScrollBar Name="PART_HorizontalScrollBar" Orientation="Horizontal" Grid.Row="1" Maximum="{TemplateBinding ScrollableWidth}"
+                                           ViewportSize="{TemplateBinding ViewportWidth}" Value="{TemplateBinding HorizontalOffset}"
+                                           Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+
+            <ScrollBar Name="PART_VerticalScrollBar" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" 
+                                           ViewportSize="{TemplateBinding ViewportHeight}" Value="{TemplateBinding VerticalOffset}"
+                                           Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+        </Grid>
+    </ControlTemplate>
+
+
+    <ControlTemplate x:Key="GridViewColumnHeaderGripperTemplate" TargetType="{x:Type Thumb}">
+        <Border Padding="{TemplateBinding Padding}" Background="Transparent">
+            <Rectangle HorizontalAlignment="Center" Width="0" Fill="{TemplateBinding Background}" />
+        </Border>
+    </ControlTemplate>
+
+
+    <ControlTemplate x:Key="GridViewColumnHeaderTemplate" TargetType="{x:Type GridViewColumnHeader}">
+        <Grid x:Name="MainGrid" Background="Transparent">
+            <Border x:Name="ColumnHeaderBorder" BorderThickness="1, 0, 0, 1" Padding="2, 0"
+                                        BorderBrush="{DynamicResource GridViewColumnHeader_DefaultBorderBrush}"
+                                        Background="{DynamicResource GridViewColumnHeader_DefaultBackgroundBrush}">
+                <ContentPresenter x:Name="ColumnHeaderContent" Margin="0,0,0,3" RecognizesAccessKey="True"
+                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+            </Border>
+            <!--  برای اینکه قابلیت Gripper در ستون های ListView را غیر فعال کنید ، پروپرتیِ IsEnabled ئه المنت زیر ، یعنی المنت Thumb را غیر فعال کنید .
+                                یا اینکه پروپرتیِ Visibility اش را Hidden کنید .
+                                -->
+            <Thumb x:Name="PART_HeaderGripper" Background="{DynamicResource GridViewColumnHeaderGripper_DefaultBackgroundBrush}" 
+                                       HorizontalAlignment="Right" Margin="0,0,-9,0" Style="{DynamicResource GridViewColumnHeaderGripper}"/>
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="ColumnHeaderBorder" Property="Background" Value="{DynamicResource GridViewColumnHeader_MouseOverBackgroundBrush}"/>
+                <Setter TargetName="ColumnHeaderBorder" Property="BorderBrush" Value="{DynamicResource GridViewColumnHeader_MouseOverBorderBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="ColumnHeaderBorder" Property="Background" Value="{DynamicResource GridViewColumnHeader_DefaultBackgroundBrush}"/>
+                <Setter TargetName="ColumnHeaderBorder" Property="BorderBrush" Value="{DynamicResource GridViewColumnHeader_DefaultBorderBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="ColumnHeaderBorder" Property="Background" Value="{DynamicResource DisabledBackgroundBrush}"/>
+                <Setter TargetName="ColumnHeaderBorder" Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+    <ControlTemplate x:Key="ListViewItemTemplate" TargetType="{x:Type ListViewItem}">
+        <Border x:Name="ListViewItemBorder" Background="Transparent" BorderThickness="1" BorderBrush="Transparent" SnapsToDevicePixels="true">
+            <GridViewRowPresenter x:Name="ListViewItemPresenter" Grid.Column="1" 
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="ListViewItemPresenter" Property="TextBlock.Foreground" Value="{DynamicResource ListViewItem_MouseEnterBorderBrush}"/>
+                <Setter TargetName="ListViewItemBorder" Property="BorderBrush" Value="{DynamicResource ListViewItem_MouseEnterBorderBrush}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="ListViewItemBorder" Property="BorderBrush" Value="{DynamicResource ListViewItem_MouseEnterBorderBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="ListViewItemPresenter" Property="TextBlock.Foreground" Value="{DynamicResource ListViewItem_DisabledBrush}"/>
+            </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsEnabled" Value="False"/>
+                    <Condition Property="IsSelected" Value="True"/>
+                </MultiTrigger.Conditions>
+                <Setter TargetName="ListViewItemBorder" Property="BorderBrush" Value="{DynamicResource ListViewItem_DisabledBrush}"/>
+            </MultiTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+    <ControlTemplate x:Key="ListViewTemplate" TargetType="{x:Type ListView}">
+        <Border Name="ListViewBorder" Padding="{TemplateBinding Padding}" BorderThickness="{TemplateBinding BorderThickness}" 
+                                    Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}">
+            <ScrollViewer Style="{DynamicResource {x:Static GridView.GridViewScrollViewerStyleKey}}">
+                <ItemsPresenter />
+            </ScrollViewer>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsGrouping" Value="True">
+                <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="ListViewBorder" Property="Background" Value="{DynamicResource ListView_DisabledBrush}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter TargetName="ListViewBorder" Property="BorderBrush" Value="{DynamicResource ListView_FocusedBorderBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  تمپلیت برای ContextMenu و MenuItem -->
+
+
+    <!--#region  تمپلیت برای ContextMenu -->
+
+    <ControlTemplate x:Key="ContextMenuTemplate" TargetType="{x:Type ContextMenu}">
+        <Border x:Name="MainBorder" Background="{TemplateBinding Background}" BorderThickness="1" BorderBrush="{TemplateBinding BorderBrush}">
+            <StackPanel Background="Transparent" IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="HasDropShadow" Value="true">
+                <Setter TargetName="MainBorder" Property="Padding" Value="0,3,0,3" />
+                <Setter TargetName="MainBorder" Property="CornerRadius" Value="4" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  تمپلیت برای MenuItem -->
+
+    <ControlTemplate x:Key="MenuItem_SeparatorControlTemplate" TargetType="{x:Type Separator}">
+        <Border BorderThickness="1" BorderBrush="{DynamicResource MenuItem_Separator_DefaultBorderBrush}"/>
+    </ControlTemplate>
+
+
+
+
+    <!-- TopLevelHeader -->
+    <ControlTemplate x:Key="MenuItem_TopLevelHeaderTemplate" TargetType="{x:Type MenuItem}">
+        <Border x:Name="MainBorder" Margin="1" Background="{TemplateBinding Background}">
+            <Grid>
+                <ContentPresenter Margin="6,3" ContentSource="Header" RecognizesAccessKey="True" 
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                <Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsSubmenuOpen}" AllowsTransparency="True" Focusable="False" 
+                               PopupAnimation="Slide">
+                    <Border x:Name="SubmenuBorder" SnapsToDevicePixels="True" BorderThickness="1" Background="{DynamicResource MenuItem_TopLevelHeader_AllBrush}"
+                            BorderBrush="{DynamicResource MenuItem_TopLevelHeader_AllBrush}">
+                        <ScrollViewer CanContentScroll="True">
+                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                        </ScrollViewer>
+                    </Border>
+                </Popup>
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsSuspendingPopupAnimation" Value="true">
+                <Setter TargetName="Popup" Property="PopupAnimation" Value="None" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="true">
+                <Setter TargetName="MainBorder" Property="BorderBrush" Value="Transparent" />
+                <Setter Property="Background" TargetName="MainBorder" Value="{DynamicResource MenuItem_TopLevelHeader_AllBrush}"/>
+            </Trigger>
+            <Trigger SourceName="Popup" Property="AllowsTransparency" Value="True">
+                <Setter TargetName="SubmenuBorder" Property="CornerRadius" Value="0,0,4,4" />
+                <Setter TargetName="SubmenuBorder" Property="Padding" Value="0,0,0,3" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource MenuItem_TopLevelHeader_AllBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+
+
+    <!-- TopLevelItem -->
+    <ControlTemplate x:Key="MenuItem_TopLevelItemTemplate" TargetType="{x:Type MenuItem}">
+        <Border x:Name="MainBorder" Margin="1" Background="{TemplateBinding Background}">
+            <Grid>
+                <ContentPresenter x:Name="HeaderHost" Margin="6,3" ContentSource="Header" RecognizesAccessKey="True" 
+                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource MenuItem_TopLevel_MouseEnterBackgroundBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="HeaderHost" Property="TextBlock.Foreground" Value="{DynamicResource MenuItem_DisabledForegroundBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+
+
+    <!-- SubmenuItem -->
+    <ControlTemplate x:Key="MenuItem_SubmenuItemTemplate" TargetType="{x:Type MenuItem}">
+        <Border x:Name="MainBorder" Margin="1" BorderThickness="1" Background="{TemplateBinding Background}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Icon" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Shortcut" />
+                    <ColumnDefinition Width="13" />
+                </Grid.ColumnDefinitions>
+                <ContentPresenter x:Name="Icon" Grid.Column="0" Margin="6,0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" ContentSource="Icon" />
+                <Border x:Name="CheckBorder" Grid.Column="0" Visibility="Collapsed" Width="16" Height="16" Margin="6, 0" BorderThickness="1" CornerRadius="1"
+                                Background="{DynamicResource MenuItem_DefaultBackgroundBrush}" BorderBrush="{DynamicResource MenuItem_TickPathBrush}">
+                    <Path x:Name="TickPath" Visibility="Hidden" StrokeThickness="1" Stroke="{DynamicResource MenuItem_TickPathBrush}"
+                                  Fill="{DynamicResource MenuItem_TickPathBrush}" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle"
+                                  Data="{Binding Source={StaticResource checkboxTickPath}, Path=Data}"/>
+                </Border>
+                <ContentPresenter x:Name="HeaderHost" Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True" 
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                <TextBlock x:Name="InputGestureText" Grid.Column="2" Text="{TemplateBinding InputGestureText}" Margin="5,2,0,2" DockPanel.Dock="Right" />
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="ButtonBase.Command" Value="{x:Null}" />
+            <Trigger Property="Icon" Value="{x:Null}">
+                <Setter TargetName="Icon" Property="Visibility" Value="Hidden" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="CheckBorder" Property="Visibility" Value="Visible" />
+                <Setter TargetName="TickPath" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsCheckable" Value="True">
+                <Setter TargetName="CheckBorder" Property="Visibility" Value="Visible" />
+                <Setter TargetName="Icon" Property="Visibility" Value="Hidden" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="MainBorder" Property="BorderBrush" Value="{DynamicResource MenuItem_MouseEnterBorderBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="HeaderHost" Property="TextBlock.Foreground" Value="{DynamicResource MenuItem_DisabledForegroundBrush}"/>
+                <Setter TargetName="InputGestureText" Property="Foreground" Value="{DynamicResource MenuItem_DisabledForegroundBrush}"/>
+                <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource MenuItem_DisabledForegroundBrush}"/>
+                <Setter TargetName="TickPath" Property="Stroke" Value="{DynamicResource MenuItem_DisabledForegroundBrush}"/>
+                <Setter TargetName="TickPath" Property="Fill" Value="{DynamicResource MenuItem_DisabledForegroundBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+
+
+    <!-- SubmenuHeader -->
+    <ControlTemplate x:Key="MenuItem_SubmenuHeaderTemplate" TargetType="{x:Type MenuItem}">
+        <Border x:Name="MainBorder" Margin="1" BorderThickness="1" Background="{TemplateBinding Background}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Icon" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Shortcut" />
+                    <ColumnDefinition Width="13" />
+                </Grid.ColumnDefinitions>
+                <ContentPresenter x:Name="Icon" Grid.Column="0" Margin="6,0" ContentSource="Icon"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                <ContentPresenter x:Name="HeaderHost" Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" ContentSource="Header" 
+                                  RecognizesAccessKey="True" TextBlock.Foreground="{TemplateBinding Foreground}"/>
+                <TextBlock x:Name="InputGestureText" Grid.Column="2" Margin="5,2,2,2" VerticalAlignment="Center" DockPanel.Dock="Right"
+                                Text="{TemplateBinding InputGestureText}" Foreground="{TemplateBinding Foreground}"/>
+                <Path x:Name="SubMenuPopupShape" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 5 5 L 0 10"
+                               Stroke="{TemplateBinding Foreground}"/>
+
+                <Popup x:Name="Popup" Placement="Right" HorizontalOffset="2" VerticalOffset="-2" IsOpen="{TemplateBinding IsSubmenuOpen}"
+                               AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                    <Border x:Name="SubmenuBorder" SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}, Path=BorderBrush}"
+                                    Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}, Path=Background}">
+                        <ScrollViewer CanContentScroll="True" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" 
+                                        VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
+                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                        </ScrollViewer>
+                    </Border>
+                </Popup>
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="Icon" Value="{x:Null}">
+                <Setter TargetName="Icon" Property="Visibility" Value="Collapsed" />
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter TargetName="MainBorder" Property="BorderBrush" 
+                                Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=BorderBrush}"/>
+            </Trigger>
+            <Trigger SourceName="Popup" Property="AllowsTransparency" Value="True">
+                <Setter TargetName="SubmenuBorder" Property="CornerRadius" Value="4" />
+                <Setter TargetName="SubmenuBorder" Property="Padding" Value="0,3" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="HeaderHost" Property="TextBlock.Foreground" Value="{DynamicResource MenuItem_DisabledForegroundBrush}"/>
+                <Setter TargetName="InputGestureText" Property="Foreground" Value="{DynamicResource MenuItem_DisabledForegroundBrush}"/>
+                <Setter TargetName="SubMenuPopupShape" Property="Stroke" Value="{DynamicResource MenuItem_DisabledForegroundBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
+    
+    <!--#endregion-->
+
+
+
+
+</ResourceDictionary>
+    
