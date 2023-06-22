@@ -708,9 +708,7 @@
         <Setter Property="Foreground" Value="{StaticResource ToolKitsMessageBoxsButton_Foreground}"/>
         <Setter Property="BorderBrush" Value="{StaticResource ToolKitsMessageBoxsButton_BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1.5"/>
-        <Setter Property="Width" Value="70"/>
-        <Setter Property="Height" Value="26"/>
-        <Setter Property="Padding" Value="0, -2, 0, 0"/>
+        <Setter Property="Padding" Value="10, 2"/>
         <Setter Property="FontSize" Value="19"/>
         <Setter Property="Template" Value="{StaticResource MessageBoxsButtonTemplate}"/>
     </Style>
@@ -736,8 +734,7 @@
         <Setter Property="YesButtonStyle" Value="{StaticResource MessageBoxsButtonStyle}"/>
         <Setter Property="NoButtonStyle" Value="{StaticResource MessageBoxsButtonStyle}"/>
         <Setter Property="CancelButtonStyle" Value="{StaticResource MessageBoxsButtonStyle}"/>
-        <!--<Setter Property="MaxHeight" Value="1000"/>
-        <Setter Property="Height" Value="700"/>-->
+        <Setter Property="MaxHeight" Value="500"/>
     </Style>
     
     <!--#endregion-->

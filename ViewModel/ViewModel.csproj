@@ -83,6 +83,7 @@
     <Compile Include="PhoneBookViewModelModule\Interface\IPhoneBookViewModelAggregator.cs" />
     <Compile Include="PhoneBookViewModelModule\Interface\IViewEventResponder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SortingModule\RowIndexComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.csproj">

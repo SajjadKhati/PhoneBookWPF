@@ -13,6 +13,21 @@ namespace Model.PhoneBookModule.Interface
         IList<Person> People { get; }
 
 
+
+
+        /// <summary>
+        ///
+        /// 
+        /// نیازی به متد Delete نیست . متدِ حذف کردن ، توسط رویداد حذف در پروپرتی People فراخوانی میشود و گزارش اش توسط این رویداد ، اطلاع داده میشود .
+        /// </summary>
+        event EventHandler<DeleteStatusEventArgs> PersonDeleteStatus;
+
+
+        event Action AnyPersonOperationCanceled;
+
+
+
+
         Task LoadPeopleAsync();
 
 
@@ -36,11 +51,5 @@ namespace Model.PhoneBookModule.Interface
         bool EditPerson(Person person);
 
 
-        /// <summary>
-        ///
-        /// 
-        /// نیازی به متد Delete نیست . متدِ حذف کردن ، توسط رویداد حذف در پروپرتی People فراخوانی میشود و گزارش اش توسط این رویداد ، اطلاع داده میشود .
-        /// </summary>
-        event EventHandler<DeleteStatusEventArgs> PersonDeleteStatus;
     }
 }

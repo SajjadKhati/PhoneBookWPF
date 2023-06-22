@@ -20,6 +20,8 @@ using ViewModel;
 using ViewModel.PhoneBookValidationRuleModule;
 using ViewModel.PhoneBookViewModelModule.Class;
 using ViewModel.PhoneBookViewModelModule.Interface;
+using ViewModel.SortingModule;
+using XceedNS = Xceed.Wpf.Toolkit;
 
 namespace PhoneBook
 {
@@ -187,9 +189,10 @@ namespace PhoneBook
         }
 
 
-        private void PhoneBookDataGrid_LoadingRowDetails(object sender, DataGridRowDetailsEventArgs e)
+        private void PhoneBookDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.HideRowDetailsIfNoValueForPostalCodeOrAddressDetails(e);
+            object newSelectedItemPerson = (e.AddedItems.Count > 0) ? e.AddedItems[0] : null;
+            this.DecideVisibilityForRowDetailsElement(newSelectedItemPerson, e.RemovedItems);
         }
 
 
@@ -230,8 +233,8 @@ namespace PhoneBook
         private void InitializePhoneBookViewModel()
         {
             this.PhoneBookViewModel = new PhoneBookViewModel(this.PersonDeleteStatus, this.LoadExceptionOccured, this.SaveSuccessed);
+            this.PhoneBookViewModel.AnyPersonOperationCanceled += PhoneBookViewModel_AnyPersonOperationCanceled;
         }
-
 
 
         private async Task LoadPhoneBookAsync()
@@ -252,7 +255,7 @@ namespace PhoneBook
             if (personDeleteInfo.Item2 != null)
             {
                 string errorMessage = $"خطایی زمان حذف اطلاعات و رکورد مربوط به شخص از پایگاه داده اتفاق افتاد  :\n\n{personDeleteInfo.Item2.Message}";
-                MessageBox.Show(errorMessage, "خطای حذف اطلاعات");
+                XceedNS.MessageBox.Show(errorMessage, "خطای حذف اطلاعات");
             }
         }
 
@@ -260,23 +263,33 @@ namespace PhoneBook
         private void LoadExceptionOccured(Exception loadException)
         {
             string errorMessage = $"خطایی زمان بارگذاری اطلاعات از پایگاه داده اتفاق افتاد  :\n\n{loadException.Message}";
-            MessageBox.Show(errorMessage, "خطای بارگذاری");
+            XceedNS.MessageBox.Show(errorMessage, "خطای بارگذاری");
         }
 
 
         private void SaveSuccessed(string message)
         {
-            MessageBox.Show(message, "ذخیره ی موفقیت آمیز");
+            XceedNS.MessageBox.Show(message, "ذخیره ی موفقیت آمیز");
+            this.OtherContentStackPanel.IsEnabled = true;
+        }
+
+
+        private void PhoneBookViewModel_AnyPersonOperationCanceled()
+        {
+            XceedNS.MessageBox.Show("عملیات ، لغو شد");
             this.OtherContentStackPanel.IsEnabled = true;
         }
 
 
         private bool ShowDeleteMessage()
         {
-            string deleteMessage = "آیا مطمئنید که میخواید سطر انتخاب شده با اطلاعات زیر را حذف کنید؟\n\n" + this.PhoneBookDataGrid.CurrentItem.ToString();
+            string deleteMessage = "آیا مطمئن هستید که قصد دارید تا سطر انتخاب شده با اطلاعات زیر را حذف کنید؟\n\n" +
+                this.PhoneBookViewModel.GetPersonInfo(this.PhoneBookDataGrid.CurrentItem);
             string deleteCaption = "حذف سطر";
-            MessageBoxResult deletionQuestionResult = MessageBox.Show(deleteMessage, deleteCaption, MessageBoxButton.YesNo,
-                MessageBoxImage.Warning, MessageBoxResult.No, MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign);
+
+            MessageBoxResult deletionQuestionResult = XceedNS.MessageBox.Show(deleteMessage, deleteCaption, 
+                MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+
             if(deletionQuestionResult == MessageBoxResult.Yes)
                 return true;
             else if(deletionQuestionResult == MessageBoxResult.No)
@@ -355,16 +368,95 @@ namespace PhoneBook
         }
 
 
-        private void HideRowDetailsIfNoValueForPostalCodeOrAddressDetails(DataGridRowDetailsEventArgs e)
-        {
-            if (this.PhoneBookViewModel.HasValuePostalCodeOrAddressDetails(e.Row.Item) == false)
-                e.DetailsElement.Visibility = Visibility.Collapsed;
-        }
-
-
         private void LoadCitiesByProvince(object province)
         {
             this.PhoneBookViewModel.LoadCitiesByProvinceIdCommand.Execute(province);
+        }
+
+
+        private void DecideVisibilityForRowDetailsElement(object newSelectedItemPerson, IList unSelectedItemPersons)
+        {
+            if (unSelectedItemPersons != null && unSelectedItemPersons.Count > 0)
+            {
+                foreach (object unSelectedItemPerson in unSelectedItemPersons)
+                {
+                    this.CollapseUnselectedRowDetailsElement(unSelectedItemPerson);
+                }
+            }
+
+            if (newSelectedItemPerson == null)
+                return;
+            DataGridRow newSelectedDataGridRow = this.PhoneBookDataGrid.ItemContainerGenerator.
+                ContainerFromItem(newSelectedItemPerson) as DataGridRow;
+            if(newSelectedDataGridRow == null)
+                return;
+
+            if (this.PhoneBookViewModel.HasValuePostalCodeOrAddressDetails(newSelectedItemPerson))
+                newSelectedDataGridRow.DetailsVisibility = Visibility.Visible;
+            else
+                newSelectedDataGridRow.DetailsVisibility = Visibility.Collapsed;
+        }
+
+
+        private void CollapseUnselectedRowDetailsElement(object unSelectedItemPerson)
+        {
+            DataGridRow unSelectedDataGridRow = this.PhoneBookDataGrid.ItemContainerGenerator.
+                ContainerFromItem(unSelectedItemPerson) as DataGridRow;
+            if (unSelectedDataGridRow == null)
+                return;
+
+            unSelectedDataGridRow.DetailsVisibility = Visibility.Collapsed;
+        }
+
+
+        private void PhoneBookDataGrid_Sorting(object sender, DataGridSortingEventArgs e)
+        {
+            if (e.Column.Header.ToString() != "ردیف" || e.Column.SortDirection != ListSortDirection.Ascending)
+                return;
+
+            e.Handled = true;
+            e.Column.SortDirection = ListSortDirection.Descending;
+            this.SetCustomSortInDataGridSource();
+        }
+
+
+        private void SetCustomSortInDataGridSource()
+        {
+            ListCollectionView dataGridsSourceCollectionView = (this.Resources["PeopleCollectionViewSourceKey"] as CollectionViewSource)
+                ?.View as ListCollectionView;
+            if (dataGridsSourceCollectionView == null)
+                return;
+
+            IList<DataGridRow> allDataGridRow = this.GetAllDataGridRows();
+            if (allDataGridRow == null || allDataGridRow.Count < 2)
+                return;
+
+            RowIndexComparer rowIndexComparer = new RowIndexComparer
+            {
+                RowIndexPersons = new Dictionary<object, int>(allDataGridRow.Count)
+            };
+            foreach (DataGridRow dataGridRow in allDataGridRow)
+            {
+                if (dataGridRow.Item != null)
+                    rowIndexComparer.RowIndexPersons.Add(dataGridRow.Item, dataGridRow.AlternationIndex);
+            }
+            
+            dataGridsSourceCollectionView.CustomSort = dataGridsSourceCollectionView.CustomSort ?? rowIndexComparer;
+        }
+
+
+        private IList<DataGridRow> GetAllDataGridRows()
+        {
+            IList<DataGridRow> addDataGridRows = new List<DataGridRow>();
+
+            foreach (object person in this.PhoneBookDataGrid.ItemsSource)
+            {
+                DataGridRow dataGridRow = this.PhoneBookDataGrid.ItemContainerGenerator.ContainerFromItem(person) as DataGridRow;
+                if (dataGridRow != null)
+                    addDataGridRows.Add(dataGridRow);
+            }
+
+            return (addDataGridRows.Count > 0) ? addDataGridRows : null;
         }
 
 

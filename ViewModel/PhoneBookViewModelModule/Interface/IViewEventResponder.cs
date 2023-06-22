@@ -9,5 +9,8 @@ namespace ViewModel.PhoneBookViewModelModule.Interface
     public interface IViewEventResponder
     {
         bool HasValuePostalCodeOrAddressDetails(object person);
+
+
+        string GetPersonInfo(object person);
     }
 }

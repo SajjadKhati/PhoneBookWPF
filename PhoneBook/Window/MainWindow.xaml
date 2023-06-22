@@ -104,7 +104,8 @@
             <DockPanel LastChildFill="True" Margin="2">
 
                 <TextBox Text="{Binding Path=Id}" Visibility="Collapsed"/>
-                <TextBox Margin="2, 2, 20, 2" Text="{Binding Path=MobileNumber}"/>
+                <TextBox Margin="2, 2, 20, 2" MinWidth="130" HorizontalContentAlignment="Center"
+                    Text="{Binding Path=MobileNumber}"/>
 
                 <!--  پروپرتیِ Attached Property ئه ItemsControl.AlternationIndex ، درون شیِ ItemsControl
                 قرار ندارد . بلکه در شیِ فرزندش که هر آیتم را نگه میدارد ، یعنی درون شیِ ContentPresenter قرار دارد .
@@ -276,7 +277,7 @@
                 <Button HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0, 3" Padding="5, 2" Content="اضافه کردن"
                         Click="AddressAddButton_Click"/>
 
-                <ItemsControl Name="AddressesItemsControl" 
+                <ItemsControl Name="AddressesItemsControl"
                     ItemsSource="{Binding 
                     Source={StaticResource EditingAddressCollectionViewSourceKey}}"
                     ItemTemplate="{StaticResource EditAddressItemDataTemplateKey}"
@@ -371,13 +372,14 @@
               RowEditEnding="PhoneBookDataGrid_RowEditEnding"
               AddingNewItem="PhoneBookDataGrid_AddingNewItem"
               PreviewKeyDown="PhoneBookDataGrid_PreviewKeyDown"
-              ColumnWidth="Auto" 
+              ColumnWidth="Auto"
               
               VirtualizingStackPanel.IsVirtualizing="True"
               VirtualizingStackPanel.VirtualizationMode="Standard"
               AlternationCount="{Binding Count}"
               RowDetailsTemplate="{StaticResource DataGridRowDetailsTemplateKey}"
-              LoadingRowDetails="PhoneBookDataGrid_LoadingRowDetails">
+              SelectionChanged="PhoneBookDataGrid_SelectionChanged"
+              Sorting="PhoneBookDataGrid_Sorting">
 
             <DataGrid.RowValidationRules>
                 <StaticResource ResourceKey="PersonValidationRuleKey"/>
@@ -448,11 +450,12 @@
                 <DataGridTextColumn Header="نام خانوادگی" Binding="{Binding Path=LastName, ValidatesOnExceptions=True}" MinWidth="150"/>
 
                 <DataGridTemplateColumn Header="شماره همراه" x:Name="MobileColumn" MinWidth="150"
-                    SortMemberPath="MobileNumber"
+                    SortMemberPath="Mobiles[0].MobileNumber"
                     CellTemplate="{StaticResource ShowMobileCollectionColumnCellDataTemplateKey}"
                     CellEditingTemplate="{StaticResource EditMobileCollectionColumnCellDataTemplateKey}"/>
 
                 <DataGridTemplateColumn Header="آدرس" x:Name="AddressColumn" MinWidth="350" Width="*"
+                    SortMemberPath="Addresses[0].Province"
                     CellTemplate="{StaticResource ShowAddressCollectionColumnCellDataTemplateKey}"
                     CellEditingTemplate="{StaticResource EditAddressCollectionColumnCellDataTemplateKey}"/>
             </DataGrid.Columns>

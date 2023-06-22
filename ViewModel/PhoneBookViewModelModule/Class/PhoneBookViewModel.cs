@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using ViewModel.PhoneBookViewModelModule.Interface;
 
 namespace ViewModel.PhoneBookViewModelModule.Class
@@ -24,6 +25,11 @@ namespace ViewModel.PhoneBookViewModelModule.Class
 
 
         public ICommand LoadCitiesByProvinceIdCommand { get; }
+
+
+
+
+        public event Action AnyPersonOperationCanceled;
 
 
 
@@ -44,6 +50,7 @@ namespace ViewModel.PhoneBookViewModelModule.Class
         {
             this.PhoneBook = new PhoneBook();
             this.PhoneBook.PersonDeleteStatus += this.PhoneBook_PersonDeleteStatus;
+            this.PhoneBook.AnyPersonOperationCanceled += PhoneBook_AnyPersonOperationCanceled;
 
             this.LoadPhoneBookAsyncCommand = new AsyncRelayCommand(this.LoadPhoneBookAsync);
             this.LoadCitiesByProvinceIdCommand = new RelayCommand<Province>(this.LoadCitiesByProvinceId);
@@ -52,8 +59,6 @@ namespace ViewModel.PhoneBookViewModelModule.Class
             this._loadExceptionOccuredAction = loadExceptionOccuredAction;
             this._saveSuccessedAction = saveSuccessedAction;
         }
-
-
 
 
         public Tuple<IEnumerable, object> GetPhoneBookBindingOperationsInfo()
@@ -138,6 +143,12 @@ namespace ViewModel.PhoneBookViewModelModule.Class
         }
 
 
+        private void PhoneBook_AnyPersonOperationCanceled()
+        {
+            this.AnyPersonOperationCanceled?.Invoke();
+        }
+
+
         public bool HasValuePostalCodeOrAddressDetails(object person)
         {
             Person personConverted = person as Person;
@@ -159,6 +170,21 @@ namespace ViewModel.PhoneBookViewModelModule.Class
                 return true;
 
             return false;
+        }
+
+
+        public string GetPersonInfo(object person)
+        {
+            Person personConverted = person as Person;
+            if (personConverted == null)
+                return "";
+
+            string message = (string.IsNullOrEmpty(personConverted.FirstName) == false) ? "نام  :  " + personConverted.FirstName : "";
+            message += (string.IsNullOrEmpty(personConverted.LastName) == false) ? "\nنام خانوادگی  :  " + personConverted.LastName : "";
+            message += (personConverted.Mobiles.Count > 0 && personConverted.Mobiles[0].MobileNumber != null) ? 
+                "\nاولین شماره همراه  :  " + personConverted.Mobiles[0].MobileNumber : "";
+
+            return message;
         }
 
 

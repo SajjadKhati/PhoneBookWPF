@@ -55,6 +55,7 @@
     <Compile Include="PhoneBookModule\Class\Address.cs" />
     <Compile Include="PhoneBookModule\Class\City.cs" />
     <Compile Include="PhoneBookModule\Class\ContactToDataAccess.cs" />
+    <Compile Include="PhoneBookModule\Class\PersonCloner.cs" />
     <Compile Include="PhoneBookModule\Class\PersonMapper.cs" />
     <Compile Include="PhoneBookModule\Class\EntityNavigationPropertyUpdatedIdInfo.cs" />
     <Compile Include="PhoneBookModule\Class\ProvinceMapper.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="PhoneBookModule\Class\Person.cs" />
     <Compile Include="PhoneBookModule\Class\PhoneBook.cs" />
     <Compile Include="PhoneBookModule\Class\Province.cs" />
+    <Compile Include="PhoneBookModule\Enum\CancelOperationType.cs" />
     <Compile Include="PhoneBookModule\Interface\IPhoneBook.cs" />
     <Compile Include="PhoneBookModule\Interface\IPhoneBookAggregator.cs" />
     <Compile Include="PhoneBookModule\Interface\IProvince.cs" />

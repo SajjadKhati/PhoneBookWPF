@@ -16,7 +16,31 @@ namespace ViewModel.PhoneBookValidationRuleModule
 {
     public class PersonValidationRule : ValidationRule
     {
-        public IPhoneBookViewModelAggregator PhoneBookViewModel { get; set; }
+        private IPhoneBookViewModelAggregator _phoneBookViewModel;
+
+
+
+
+        public IPhoneBookViewModelAggregator PhoneBookViewModel
+        {
+            get
+            {
+                return this._phoneBookViewModel;
+            }
+            set
+            {
+                if (this._phoneBookViewModel != value)
+                {
+                    if (this._phoneBookViewModel != null)
+                        this._phoneBookViewModel.AnyPersonOperationCanceled -= this.Value_AnyPersonOperationCanceled;
+
+                    this._phoneBookViewModel = value;
+
+                    if (this._phoneBookViewModel != null)
+                        this._phoneBookViewModel.AnyPersonOperationCanceled += this.Value_AnyPersonOperationCanceled;
+                }
+            }
+        }
 
 
         public bool AllowCallAddOrUpdate{ get; set; }
@@ -72,6 +96,12 @@ namespace ViewModel.PhoneBookValidationRuleModule
         {
             this.AllowCallAddOrUpdate = false;
             this.ShouldCallAdd = false;
+        }
+
+
+        private void Value_AnyPersonOperationCanceled()
+        {
+            this.ResetFlagProperties();
         }
 
 

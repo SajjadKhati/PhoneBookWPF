@@ -1,4 +1,5 @@
 ﻿using Model.NotifyPropertyChangedModule;
+using Model.PhoneBookModule.Enum;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,8 +11,21 @@ using System.Threading.Tasks;
 
 namespace Model.PhoneBookModule.Class
 {
-    public class Person : NotifyPropertyChanged
+    public class Person : NotifyPropertyChanged, IEditableObject
     {
+        private bool onEditFlag;
+
+
+        private Person copyPersonForCancelEdit;
+
+
+
+
+        public event EventHandler<CancelOperationType> OperationCanceled;
+
+
+
+
         private int _id;
 
 
@@ -102,6 +116,48 @@ namespace Model.PhoneBookModule.Class
             this.Addresses = new ObservableCollection<Address>();
         }
 
-        
+
+        ////////////////////////////////////////////////////////////
+
+
+        public void BeginEdit()
+        {
+            if (this.onEditFlag == true)
+                return;
+
+            this.onEditFlag = true;
+            this.copyPersonForCancelEdit = PersonCloner.DeepClonePerson(this);
+        }
+
+
+        public void EndEdit()
+        {
+            if(this.onEditFlag == false)
+                return;
+
+            this.onEditFlag = false;
+            this.copyPersonForCancelEdit = null;
+        }
+
+
+        public void CancelEdit()
+        {
+            if (this.onEditFlag == false)
+                return;
+
+            this.onEditFlag = false;
+            if (this.copyPersonForCancelEdit == null)
+                return;
+
+            PersonCloner.UpdatePerson(this.copyPersonForCancelEdit, this);
+            CancelOperationType cancelOperationType;
+            if (string.IsNullOrEmpty(this.copyPersonForCancelEdit.FirstName) == true)
+                cancelOperationType = CancelOperationType.AddCanceled;
+            else
+                cancelOperationType = CancelOperationType.EditCanceled;
+            this.OperationCanceled?.Invoke(this, cancelOperationType);
+        }
+
+
     }
 }

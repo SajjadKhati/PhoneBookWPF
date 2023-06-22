@@ -52,5 +52,11 @@ namespace Model.PhoneBookModule.Class
         }
 
 
+        internal Mobile ShallowCopy()
+        {
+            return this.MemberwiseClone() as Mobile;
+        }
+
+
     }
 }

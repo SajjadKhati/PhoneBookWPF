@@ -1,6 +1,7 @@
 ﻿using DataAccess.EntityModule.Class;
 using DataAccess.EntityModule.Class.Entity;
 using DataAccess.ExceptionModule;
+using Model.PhoneBookModule.Enum;
 using Model.PhoneBookModule.Interface;
 using System;
 using System.Collections;
@@ -35,7 +36,15 @@ namespace Model.PhoneBookModule.Class
 
 
 
+        private bool allowDeleteFlag = true;
+
+
+
+
         public event EventHandler<DeleteStatusEventArgs> PersonDeleteStatus;
+
+
+        public event Action AnyPersonOperationCanceled;
 
 
 
@@ -182,12 +191,40 @@ namespace Model.PhoneBookModule.Class
             return isDeletionSuccessed;
         }
 
+        
+        private void Person_OperationCanceled(object sender, CancelOperationType e)
+        {
+            if (e == CancelOperationType.AddCanceled)
+            {
+                this.allowDeleteFlag = false;
+                Person addCanceledPerson = sender as Person;
+                if (addCanceledPerson != null)
+                {
+                    this.People.Remove(addCanceledPerson);
+                }
+                this.allowDeleteFlag = true;
+            }
 
+            this.AnyPersonOperationCanceled?.Invoke();
+        }
 
 
         private void People_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if(e.Action == NotifyCollectionChangedAction.Remove)
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                IList addedPeople = e.NewItems;
+                if (addedPeople == null || addedPeople.Count < 1)
+                    return;
+
+                foreach (Person addedPerson in addedPeople)
+                {
+                    addedPerson.OperationCanceled += this.Person_OperationCanceled;
+                }
+            }
+
+
+            if(e.Action == NotifyCollectionChangedAction.Remove && this.allowDeleteFlag == true)
             {
                 IList deletionPeople = e.OldItems;
                 if (deletionPeople == null || deletionPeople.Count < 1)
@@ -195,6 +232,7 @@ namespace Model.PhoneBookModule.Class
 
                 foreach (Person deletionPerson in deletionPeople)
                 {
+                    deletionPerson.OperationCanceled -= this.Person_OperationCanceled;
                     this.DeletePerson(deletionPerson);
                 }
             }

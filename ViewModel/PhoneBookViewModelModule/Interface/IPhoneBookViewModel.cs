@@ -23,6 +23,11 @@ namespace ViewModel.PhoneBookViewModelModule.Interface
 
 
 
+        event Action AnyPersonOperationCanceled;
+
+
+
+
         bool AddPerson(object person);
 
 
