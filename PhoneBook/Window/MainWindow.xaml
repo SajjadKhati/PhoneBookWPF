@@ -1,14 +1,16 @@
-﻿<Window x:Class="PhoneBook.MainWindow"
+﻿<Window x:Class="PhoneBook.Window.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:validationRuleModule="clr-namespace:ViewModel.PhoneBookValidationRuleModule;assembly=ViewModel"
         xmlns:viewBindingConverter="clr-namespace:PhoneBook.ViewBindingConverter"
+        xmlns:collectionViewOperationsModule="clr-namespace:ViewModel.CollectionViewOperationsModule.Class;assembly=ViewModel"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:behavior ="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:PhoneBook"
         mc:Ignorable="d"
-        Name="PhoneBookWindow" Title="دفترچه تلفن طلوع" MinHeight="450" MinWidth="900" MaxHeight="760" MaxWidth="1400" 
+        Name="PhoneBookWindow" Title="دفترچه تلفن طلوع" MinHeight="450" MinWidth="900" MaxHeight="815" MaxWidth="1500" 
         SizeToContent="WidthAndHeight" FontFamily="Calibri" FontSize="17"
         Loaded="PhoneBookWindow_Loaded"
         DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PhoneBookViewModel}">
@@ -17,7 +19,7 @@
 
 
         <CollectionViewSource x:Key="PeopleCollectionViewSourceKey" 
-                              Source="{Binding Path=PhoneBook.People}"/>
+            Source="{Binding Path=PhoneBook.People}"/>
 
 
         <CollectionViewSource x:Key="ProvinceCollectionViewSourceKey" 
@@ -27,8 +29,22 @@
         <validationRuleModule:PersonValidationRule x:Key="PersonValidationRuleKey" ValidationStep="UpdatedValue"/>
 
 
+        <collectionViewOperationsModule:CollectionViewOperations x:Key="CollectionViewOperationsKey"/>
+
+
         <viewBindingConverter:AlternationBackgroundConverter x:Key="GroupHeaderAlternationBackgroundConverterKey"
             BackgroundBrush="LightCyan" AlternationBackgroundBrush="LightSkyBlue"/>
+
+        <collectionViewOperationsModule:PersonGroupingPropertyConverter x:Key="PersonGroupingPropertyConverterKey"/>
+
+
+        <x:Array x:Key="GroupingComboBoxSourceArrayKey" Type="{x:Type system:String}">
+            <system:String>هیچ کدام</system:String>
+            <system:String>نام</system:String>
+            <system:String>نام خانوادگی</system:String>
+            <system:String>اولین استان</system:String>
+            <system:String>اولین شهر</system:String>
+        </x:Array>
 
 
         <viewBindingConverter:DataGridRowLiningUpConverter x:Key="DataGridRowLiningUpConverterKey"/>
@@ -57,6 +73,16 @@
                     Foreground="White" HorizontalAlignment="Center"  />
             </Grid>
         </ControlTemplate>
+
+
+        <Style x:Key="MobileColumnCellStyleKey" TargetType="{x:Type DataGridCell}">
+            <Setter Property="MinWidth" Value="150"/>
+            <Style.Triggers>
+                <Trigger Property="IsEditing" Value="True">
+                    <Setter Property="MinWidth" Value="250"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
 
 
         <DataTemplate x:Key="ShowMobileItemDataTemplateKey">
@@ -130,7 +156,10 @@
                 </StackPanel.Resources>
 
                 <Button HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0, 3" Padding="5, 2" Content="اضافه کردن"
-                        Click="MobileAddButton_Click"/>
+                    Command="{Binding Source={StaticResource CollectionViewOperationsKey},
+                    Path= AddItemToCollectionViewCommand}"
+                    CommandParameter="{Binding 
+                    Source={StaticResource EditingMobileCollectionViewSourceKey}}"/>
 
                 <ItemsControl Name="MobilesItemsControl" 
                       ItemsSource="{Binding 
@@ -275,7 +304,10 @@
                 </StackPanel.Resources>
 
                 <Button HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0, 3" Padding="5, 2" Content="اضافه کردن"
-                        Click="AddressAddButton_Click"/>
+                    Command="{Binding Source={StaticResource CollectionViewOperationsKey},
+                    Path= AddItemToCollectionViewCommand}"
+                    CommandParameter="{Binding 
+                    Source={StaticResource EditingAddressCollectionViewSourceKey}}"/>
 
                 <ItemsControl Name="AddressesItemsControl"
                     ItemsSource="{Binding 
@@ -355,13 +387,106 @@
             <RowDefinition Name="DataGridRow" Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="1" Name="OtherContentStackPanel" Orientation="Horizontal" FlowDirection="RightToLeft">
-            <Button Grid.Row="1" Content="Test" HorizontalAlignment="Left" VerticalAlignment="Top" Padding="20, 2" Margin="20" 
-                    Click="ButtonBase_Click"/>
 
-            <ComboBox Grid.Row="1" Name="Combobox" Margin="0, 20" Padding="30, 5" HorizontalAlignment="Left" 
-                      VerticalAlignment="Top" ItemsSource="{Binding Path=PhoneBook.People}"/>
-        </StackPanel>
+        <Grid Grid.Row="1" Name="SearchAndGroupingGrid" FlowDirection="RightToLeft" Margin="5, 20">
+            <Grid.RowDefinitions>
+                <RowDefinition Name="SearchButtonRow" Height="Auto"/>
+                <RowDefinition Name="SearchingRow" Height="Auto"/>
+                <RowDefinition Name="GroupingRow" Height="Auto"/>
+                <RowDefinition Name="CollapseButtonRow" Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Button Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0, 5" Padding="5, 2" Content="جستجو"/>
+
+            <WrapPanel Grid.Row="1" Margin="0, 10">
+                <StackPanel Margin="10, 10">
+                    <TextBlock Text="نام  :"/>
+                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26" 
+                        Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
+                        Source={StaticResource CollectionViewOperationsKey},
+                        Path=FilterFirstName}"
+                        TextChanged="FilterFirstNameTextBox_TextChanged"/>
+                </StackPanel>
+
+                <StackPanel Margin="10, 10">
+                    <TextBlock Text="نام خانوادگی  :"/>
+                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
+                        Source={StaticResource CollectionViewOperationsKey},
+                        Path=FilterLastName}"
+                        TextChanged="FilterLastNameTextBox_TextChanged"/>
+                </StackPanel>
+
+                <StackPanel Margin="10, 10">
+                    <TextBlock Text="شماره همراه  :"/>
+                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
+                        Source={StaticResource CollectionViewOperationsKey},
+                        Path=FilterMobileNumber}"
+                        TextChanged="FilterMobileNumbersTextBox_TextChanged"/>
+                </StackPanel>
+
+                <StackPanel Margin="10, 10">
+                    <TextBlock Text="استان  :"/>
+                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
+                        Source={StaticResource CollectionViewOperationsKey},
+                        Path=FilterProvince}"
+                        TextChanged="FilterProvincesTextBox_TextChanged"/>
+                </StackPanel>
+
+                <StackPanel Margin="10, 10">
+                    <TextBlock Text="شهر  :"/>
+                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
+                        Source={StaticResource CollectionViewOperationsKey},
+                        Path=FilterCity}"
+                        TextChanged="FilterCitiesTextBox_TextChanged"/>
+                </StackPanel>
+
+                <StackPanel Margin="10, 10">
+                    <TextBlock Text="جزئیات آدرس  :"/>
+                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
+                        Source={StaticResource CollectionViewOperationsKey},
+                        Path=FilterAddressDetail}"
+                        TextChanged="FilterAddressDetailsTextBox_TextChanged"/>
+                </StackPanel>
+
+                <StackPanel Margin="10, 10">
+                    <TextBlock Text="کد پستی  :"/>
+                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
+                        Source={StaticResource CollectionViewOperationsKey},
+                        Path=FilterPostalCode}"
+                        TextChanged="FilterPostalCodesTextBox_TextChanged"/>
+                </StackPanel>
+            </WrapPanel>
+
+            <StackPanel Grid.Row="2" Margin="0, 0">
+                <TextBlock Text="گروه بندی ستون  :"/>
+                <ComboBox Margin="0, 10, 0, 0" HorizontalAlignment="Left" MinWidth="200" MinHeight="26"
+                    ItemsSource="{StaticResource GroupingComboBoxSourceArrayKey}"
+                    SelectedItem="{Binding Mode=OneWayToSource, Source={StaticResource CollectionViewOperationsKey},
+                    Path=GroupingProperty, 
+                    Converter={StaticResource PersonGroupingPropertyConverterKey}}"
+                    SelectionChanged="Selector_OnSelectionChanged">
+
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="SelectionChanged">
+                            <behavior:InvokeCommandAction 
+                                Command="{Binding Source={StaticResource CollectionViewOperationsKey}, 
+                                Path= PersonGroupingCommand}" 
+                                CommandParameter="{Binding Mode=OneWay, 
+                                Source={StaticResource PeopleCollectionViewSourceKey}}"/>
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+
+                </ComboBox>
+            </StackPanel>
+
+            <Button Grid.Row="3" Margin="0, 10, 0, 5" HorizontalAlignment="Left" Content="شکل مربوط به collupse به سمت بالا"/>
+        </Grid>
 
 
         <DataGrid Grid.Row="2" Name="PhoneBookDataGrid" Margin="5" AutoGenerateColumns="False" FlowDirection="RightToLeft"
@@ -452,7 +577,8 @@
                 <DataGridTemplateColumn Header="شماره همراه" x:Name="MobileColumn" MinWidth="150"
                     SortMemberPath="Mobiles[0].MobileNumber"
                     CellTemplate="{StaticResource ShowMobileCollectionColumnCellDataTemplateKey}"
-                    CellEditingTemplate="{StaticResource EditMobileCollectionColumnCellDataTemplateKey}"/>
+                    CellEditingTemplate="{StaticResource EditMobileCollectionColumnCellDataTemplateKey}"
+                    CellStyle="{StaticResource MobileColumnCellStyleKey}"/>
 
                 <DataGridTemplateColumn Header="آدرس" x:Name="AddressColumn" MinWidth="350" Width="*"
                     SortMemberPath="Addresses[0].Province"

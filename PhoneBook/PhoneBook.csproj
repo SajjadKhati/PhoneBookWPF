@@ -142,6 +142,8 @@
     <Compile Include="ViewBindingConverter\EditCityComboBoxEnableConverter.cs" />
     <Compile Include="ViewBindingConverter\EditPostalCodeConverter.cs" />
     <Compile Include="ViewBindingConverter\TextBlockVisibilityForAddressItemsConverter.cs" />
+    <Compile Include="VisualElementModule\VisualParentFinder.cs" />
+    <Compile Include="Window\MainWindow.cs" />
     <Compile Include="Window\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

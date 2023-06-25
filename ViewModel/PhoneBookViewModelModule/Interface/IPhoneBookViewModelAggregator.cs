@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace ViewModel.PhoneBookViewModelModule.Interface
 {
-    public interface IPhoneBookViewModelAggregator : IPhoneBookViewModel, IBindingRelatedOperations, IViewEventResponder
+    public interface IPhoneBookViewModelAggregator : IPhoneBookViewModel
     {
     }
 }

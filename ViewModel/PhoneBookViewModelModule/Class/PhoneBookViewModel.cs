@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using ViewModel.PhoneBookViewModelModule.Interface;
@@ -61,21 +62,19 @@ namespace ViewModel.PhoneBookViewModelModule.Class
         }
 
 
-        public Tuple<IEnumerable, object> GetPhoneBookBindingOperationsInfo()
-        {
-            IEnumerable collectionForSynchronization = this.PhoneBook.People;
-            object collectionSynchronizationLock = Model.PhoneBookModule.Class.PhoneBook.AddPeopleTaskLock;
-            return new Tuple<IEnumerable, object>(collectionForSynchronization, collectionSynchronizationLock);
-        }
-
 
 
         private async Task LoadPhoneBookAsync()
         {
             try
             {
+                BindingOperations.EnableCollectionSynchronization(this.PhoneBook.People, 
+                    Model.PhoneBookModule.Class.PhoneBook.AddPeopleTaskLock);
+
                 await this.PhoneBook.LoadPeopleAsync();
                 await this.PhoneBook.LoadProvincesAsync();
+
+                BindingOperations.DisableCollectionSynchronization(this.PhoneBook.People);
             }
             catch (Exception exception)
             {
@@ -146,45 +145,6 @@ namespace ViewModel.PhoneBookViewModelModule.Class
         private void PhoneBook_AnyPersonOperationCanceled()
         {
             this.AnyPersonOperationCanceled?.Invoke();
-        }
-
-
-        public bool HasValuePostalCodeOrAddressDetails(object person)
-        {
-            Person personConverted = person as Person;
-            if (personConverted == null) 
-                return false;
-
-            foreach (Address address in personConverted.Addresses)
-            {
-                if (this.HasValuePostalCodeOrAddressDetailsForSingleAddress(address) == true)
-                    return true;
-            }
-            return false;
-        }
-
-
-        private bool HasValuePostalCodeOrAddressDetailsForSingleAddress(Address address)
-        {
-            if ((address.PostalCode.HasValue == true && address.PostalCode > 0) || string.IsNullOrEmpty(address.AddressDetail) == false) 
-                return true;
-
-            return false;
-        }
-
-
-        public string GetPersonInfo(object person)
-        {
-            Person personConverted = person as Person;
-            if (personConverted == null)
-                return "";
-
-            string message = (string.IsNullOrEmpty(personConverted.FirstName) == false) ? "نام  :  " + personConverted.FirstName : "";
-            message += (string.IsNullOrEmpty(personConverted.LastName) == false) ? "\nنام خانوادگی  :  " + personConverted.LastName : "";
-            message += (personConverted.Mobiles.Count > 0 && personConverted.Mobiles[0].MobileNumber != null) ? 
-                "\nاولین شماره همراه  :  " + personConverted.Mobiles[0].MobileNumber : "";
-
-            return message;
         }
 
 
