@@ -242,7 +242,16 @@ namespace DataAccess.EntityModule.Class
         /// </returns>
         public int SaveChanges()
         {
-            return this._context.SaveChanges();
+            int savedStateNumber = 0;
+            try
+            {
+                savedStateNumber = this._context.SaveChanges();
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                this.MobileNumberUniqueExceptionHandler(dbUpdateException);
+            }
+            return savedStateNumber;
         }
 
 
@@ -255,7 +264,32 @@ namespace DataAccess.EntityModule.Class
         /// </returns>
         public async Task<int> SaveChangesAsync()
         {
-            return await this._context.SaveChangesAsync();
+            int savedStateNumber = 0;
+            try
+            {
+                savedStateNumber = await this._context.SaveChangesAsync();
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                this.MobileNumberUniqueExceptionHandler(dbUpdateException);
+            }
+
+            return savedStateNumber;
+        }
+
+
+        private void MobileNumberUniqueExceptionHandler(DbUpdateException dbUpdateException)
+        {
+            string message = dbUpdateException?.InnerException?.InnerException?.Message;
+            if (message != null)
+            {
+                string showMessage = "نمیتوانید دو یا چند شماره ی همراه تکراری وارد کنید . لطفا شماره همراه منحصر به فرد وارد کنید .";
+                string containMessage = "Cannot insert duplicate key row in object 'dbo.MobileNumberTable' with unique index 'MobileNumber_UniqueIndex'";
+                if (message.Contains(containMessage) == true)
+                    throw new Exception(showMessage, dbUpdateException);
+            }
+
+            throw dbUpdateException;
         }
 
 

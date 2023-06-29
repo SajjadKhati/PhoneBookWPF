@@ -29,7 +29,7 @@ namespace PhoneBook.ViewBindingConverter
                 else
                     return this.AlternationBackgroundBrush;
             }
-            catch (Exception e) { }
+            catch (Exception exception) { }
 
             return Binding.DoNothing;
         }

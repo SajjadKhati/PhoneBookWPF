@@ -3,17 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:validationRuleModule="clr-namespace:ViewModel.PhoneBookValidationRuleModule;assembly=ViewModel"
-        xmlns:viewBindingConverter="clr-namespace:PhoneBook.ViewBindingConverter"
-        xmlns:collectionViewOperationsModule="clr-namespace:ViewModel.CollectionViewOperationsModule.Class;assembly=ViewModel"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:behavior ="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:customControls ="clr-namespace:PoshtibangirTolo.View.CustomControl"
+        xmlns:userControl="clr-namespace:PoshtibangirTolo.View.UserControls"
         xmlns:local="clr-namespace:PhoneBook"
         mc:Ignorable="d"
         Name="PhoneBookWindow" Title="دفترچه تلفن طلوع" MinHeight="450" MinWidth="900" MaxHeight="815" MaxWidth="1500" 
-        SizeToContent="WidthAndHeight" FontFamily="Calibri" FontSize="17"
-        Loaded="PhoneBookWindow_Loaded"
+        SizeToContent="WidthAndHeight" WindowStyle="None" Loaded="PhoneBookWindow_Loaded"
+        Style="{DynamicResource {x:Type Window}}" Icon="{StaticResource WindowIconDrawingImage}"
         DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PhoneBookViewModel}">
+    <!--   در خط بالا ، Style ئه ویندوز را DynamicResource گذاشتیم چون اگه بعدا در زمان اجرا ، استایلِ Window تغییر کرد ، 
+    یعنی مثلا به استایلِ Light تغییر کرد ، مقدارِ استایلِ ویندوزمون هم اتوماتیک تغییر کنه .
+    همچنین چون موقع تعریف استایل ، استایل را از نوع MainWindow نگرفتیم و از نوع Window گرفتیم ، مجبوریم که صریحا در خط بالا ، پروپرتیِ Style ئه MainWindow مون را مقداردهی کنیم .   -->
 
     <Window.Resources>
 
@@ -24,106 +25,6 @@
 
         <CollectionViewSource x:Key="ProvinceCollectionViewSourceKey" 
             Source="{Binding Path=PhoneBook.Provinces}"/>
-
-
-        <validationRuleModule:PersonValidationRule x:Key="PersonValidationRuleKey" ValidationStep="UpdatedValue"/>
-
-
-        <collectionViewOperationsModule:CollectionViewOperations x:Key="CollectionViewOperationsKey"/>
-
-
-        <viewBindingConverter:AlternationBackgroundConverter x:Key="GroupHeaderAlternationBackgroundConverterKey"
-            BackgroundBrush="LightCyan" AlternationBackgroundBrush="LightSkyBlue"/>
-
-        <collectionViewOperationsModule:PersonGroupingPropertyConverter x:Key="PersonGroupingPropertyConverterKey"/>
-
-
-        <x:Array x:Key="GroupingComboBoxSourceArrayKey" Type="{x:Type system:String}">
-            <system:String>هیچ کدام</system:String>
-            <system:String>نام</system:String>
-            <system:String>نام خانوادگی</system:String>
-            <system:String>اولین استان</system:String>
-            <system:String>اولین شهر</system:String>
-        </x:Array>
-
-
-        <viewBindingConverter:DataGridRowLiningUpConverter x:Key="DataGridRowLiningUpConverterKey"/>
-
-
-        <viewBindingConverter:TextBlockVisibilityForAddressItemsConverter x:Key="TextBlockVisibilityForAddressItemsConverterKey"/>
-
-
-        <viewBindingConverter:EditCityComboBoxEnableConverter x:Key="EditCityComboBoxEnableConverterKey"/>
-
-
-        <viewBindingConverter:EditPostalCodeConverter x:Key="EditPostalCodeConverterKey"/>
-
-
-        <viewBindingConverter:AddressItemNumberConverter x:Key="AddressItemNumberConverterKey"/>
-
-
-        <ControlTemplate TargetType="{x:Type Control}" x:Key="DataGridRowValidationErrorControlTemplateKey">
-            <Grid Margin="0,-2,0,-2" Background="Transparent"
-                  ToolTip="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGridRow}},
-                        Path=(Validation.Errors)[0].ErrorContent}">
-
-                <Ellipse StrokeThickness="0" Fill="Red" Width="{TemplateBinding FontSize}" 
-                    Height="{TemplateBinding FontSize}"/>
-                <TextBlock Text="!" FontSize="{TemplateBinding FontSize}" FontWeight="Bold" 
-                    Foreground="White" HorizontalAlignment="Center"  />
-            </Grid>
-        </ControlTemplate>
-
-
-        <Style x:Key="MobileColumnCellStyleKey" TargetType="{x:Type DataGridCell}">
-            <Setter Property="MinWidth" Value="150"/>
-            <Style.Triggers>
-                <Trigger Property="IsEditing" Value="True">
-                    <Setter Property="MinWidth" Value="250"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-
-        <DataTemplate x:Key="ShowMobileItemDataTemplateKey">
-            <Grid Margin="2">
-                <TextBlock Margin="2, 0" Text="{Binding Path=MobileNumber}"/>
-            </Grid>
-        </DataTemplate>
-
-
-        <DataTemplate x:Key="ShowMobileCollectionColumnCellDataTemplateKey">
-            <ItemsControl ItemTemplate="{StaticResource ShowMobileItemDataTemplateKey}"
-                AlternationCount="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Items.Count}"
-                VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard">
-
-                <ItemsControl.Resources>
-                    <!--  برای حالت نمایش ، حداقل در این نسخه ، نیازی به ساختن CollectionViewSource نیست و اگر نسازیم ، خودش ، یک CollectionView ی پیش فرض میسازد
-                    و از آن استفاده میکند . فقط در حالت ویرایش فعلا به CollectionViewSource نیاز داریم . ولی بری حالت نمایش هم ساختیم .
-                    -->
-                    <CollectionViewSource x:Key="ShowingMobileCollectionViewSourceKey" 
-                                          Source="{Binding Path=Mobiles}"/>
-                </ItemsControl.Resources>
-
-                <!--  چون دستور StaticResource ، فقط در المنت های پدرِ Visual جستجو میکنند ، یعنی در درخت Visual Tree جستجو میکنند ، 
-                پس اگر MobileCollectionViewSourceKey را در DataTemplate تعریف کنیم ، چون المنتِ DataTemplate ، یک المنت بصری نیست و یک المنت منطقی هست ،
-                پس عملیات StaticResource و در واقع عمل  Binding در کد زیر ، درست انجام نمیشود .
-                -->
-                <!--  همچنین اینکه برای پروپرتیِ ItemsSource در کد زیر ، دستور Binding را بکار بردیم و Binding انجام دادیم اما بجایش ، مستقیما از StaticResource استفاده نکردیم
-                چون پروپرتیِ ItemsSource ، نوع IEnumerable را میخواهد در صورتی که شی مورد نظر مان یعنی شی MobileCollectionViewSourceKey ، 
-                از نوع CollectionViewSource هست که رابط ItemsSource را پیاده سازی نمیکند . بلکه پروپرتیِ View در CollectionViewSource ، از نوع رابط
-                ICollectionView هست که آن هم از رابط IEnumerable ارث بری میکند .
-                
-                اما وقتی از دستور Binding استفاده میکنیم ، موتورِ Binding ، اتوماتیک به پروپرتی پیش فرض اش که توسط اتریبیوتِ DefaultPropertyAttribute مشخص میشود ، 
-                Binding را به آن پروپرتی انجام میدهد . در شیِ CollectionViewSource ، پروپرتی پیش فرض ، پروپرتیِ View هست .
-                یعنی وقتی به شی ای از CollectionViewSource عمل Binding انجام میدهیم ، 
-                موتور Binding ، به پروپرتیِ View در CollectionViewSource آن Binding را انجام میدهد .
-                -->
-                <ItemsControl.ItemsSource>
-                    <Binding Source="{StaticResource ShowingMobileCollectionViewSourceKey}"/>
-                </ItemsControl.ItemsSource>
-            </ItemsControl>
-        </DataTemplate>
 
 
         <DataTemplate x:Key="EditMobileItemDataTemplateKey">
@@ -138,11 +39,16 @@
                 
                 همچنین چون پروپرتیِ ItemsControl.AlternationIndex ، یک attached property هست ، موقع Binding کردن ، باید آنرا درون پرانتز قرار دهیم تا بشناسد .
                 -->
-                <Button DockPanel.Dock="Left" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="20, 2, 2, 2" 
-                    Padding="3, 2" Content="حذف شماره همراه" Click="MobileDeleteButton_Click" 
+                <customControls:ShapeTextButton DockPanel.Dock="Left" HorizontalAlignment="Right" VerticalAlignment="Center" 
+                    Margin="20, 2, 2, 2" Padding="15, 5" Content="حذف شماره همراه" Click="MobileDeleteButton_Click" 
                     Tag="{Binding Mode=OneWay, 
                     RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContentPresenter}, 
-                    Path=(ItemsControl.AlternationIndex)}"/>
+                    Path=(ItemsControl.AlternationIndex)}"
+                    DefaultButtonShape="{StaticResource DeleteMobileBevelShape}"
+                    MouseEnterButtonShape="{StaticResource DeleteMobileBevelShape}"
+                    MouseDownButtonShape="{StaticResource DeleteMobileBevelShape}"
+                    ControlDisabledButtonShape="{StaticResource DeleteMobileBevelShape}"
+                    GetContentBrush_ForWhichButtonShapeProperty="Stroke"/>
             </DockPanel>
         </DataTemplate>
 
@@ -155,7 +61,13 @@
                         Source="{Binding Path=Mobiles}"/>
                 </StackPanel.Resources>
 
-                <Button HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0, 3" Padding="5, 2" Content="اضافه کردن"
+                <customControls:ShapeTextButton Margin="0, 3" Padding="15, 5" Content="اضافه کردن"
+                    HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Top"
+                    DefaultButtonShape="{StaticResource AddMobileBevelShape}"
+                    MouseEnterButtonShape="{StaticResource AddMobileBevelShape}"
+                    MouseDownButtonShape="{StaticResource AddMobileBevelShape}"
+                    ControlDisabledButtonShape="{StaticResource AddMobileBevelShape}"
+                    GetContentBrush_ForWhichButtonShapeProperty="Stroke"
                     Command="{Binding Source={StaticResource CollectionViewOperationsKey},
                     Path= AddItemToCollectionViewCommand}"
                     CommandParameter="{Binding 
@@ -169,36 +81,6 @@
                       VirtualizingStackPanel.VirtualizationMode="Standard"
                       AlternationCount="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Items.Count}"/>
             </StackPanel>
-        </DataTemplate>
-
-
-        <DataTemplate x:Key="ShowAddressItemDataTemplateKey">
-            <StackPanel Margin="2" Orientation="Horizontal">
-                <TextBlock Margin="5, 0" Text="استان"/>
-                <TextBlock Margin="5, 0" Text="{Binding Path=Province}"/>
-                <TextBlock Margin="5, 0" Text="،  شهر"/>
-                <TextBlock Margin="5, 0" Text="{Binding Path=City}"/>
-            </StackPanel>
-        </DataTemplate>
-
-
-        <DataTemplate x:Key="ShowAddressCollectionColumnCellDataTemplateKey">
-            <ItemsControl ItemTemplate="{StaticResource ShowAddressItemDataTemplateKey}"
-                AlternationCount="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Items.Count}"
-                VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard">
-
-                <ItemsControl.Resources>
-                    <!--  برای حالت نمایش ، حداقل در این نسخه ، نیازی به ساختن CollectionViewSource نیست و اگر نسازیم ، خودش ، یک CollectionView ی پیش فرض میسازد
-                    و از آن استفاده میکند . فقط در حالت ویرایش فعلا به CollectionViewSource نیاز داریم . ولی بری حالت نمایش هم ساختیم .
-                    -->
-                    <CollectionViewSource x:Key="ShowingAddressCollectionViewSourceKey" 
-                        Source="{Binding Path=Addresses}"/>
-                </ItemsControl.Resources>
-
-                <ItemsControl.ItemsSource>
-                    <Binding Source="{StaticResource ShowingAddressCollectionViewSourceKey}"/>
-                </ItemsControl.ItemsSource>
-            </ItemsControl>
         </DataTemplate>
 
 
@@ -230,24 +112,13 @@
                 البته موقع Convert نیاز به تبدیل ندارد .
                 -->
                 <StackPanel HorizontalAlignment="Left"  Margin="5, 0">
-                    <TextBlock Margin="5, 0" Text="استان  :"/>
+                    <TextBlock Margin="5, 0" Text="استان  :" Style="{DynamicResource TextBlockStyleKey}"/>
                     <ComboBox Name="EditProvinceComboBox"  IsSynchronizedWithCurrentItem="False" Padding="10, 3" MinWidth="190"
                           ItemsSource="{Binding Mode=OneWay,
                             Source={StaticResource ProvinceCollectionViewSourceKey}}"
                           SelectedValuePath="ProvinceName"
                           SelectedValue="{Binding Mode=TwoWay, Path=Province}"
                           SelectionChanged="EditProvinceComboBox_SelectionChanged">
-                        <!--<behavior:Interaction.Triggers>
-                            <behavior:EventTrigger EventName="SelectionChanged">
-                                <behavior:InvokeCommandAction 
-                                    Command="{Binding 
-                                    RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}, 
-                                    Path=PhoneBookViewModel.LoadCitiesByProvinceIdCommand}" 
-                                    CommandParameter="{Binding Mode=OneWay, 
-                                    RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ComboBox}}, 
-                                    Path=SelectedItem.Id}"/>
-                            </behavior:EventTrigger>
-                        </behavior:Interaction.Triggers>-->
 
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
@@ -258,7 +129,7 @@
                 </StackPanel>
 
                 <StackPanel HorizontalAlignment="Left" Margin="5, 0">
-                    <TextBlock Margin="5, 0" Text="شهر  :"/>
+                    <TextBlock Margin="5, 0" Text="شهر  :" Style="{DynamicResource TextBlockStyleKey}"/>
                     <ComboBox IsSynchronizedWithCurrentItem="False" Padding="10, 3" MinWidth="160"
                         ItemsSource="{Binding Mode=OneWay, ElementName=EditProvinceComboBox, Path=SelectedItem.Cities}"
                         SelectedValuePath="CityName"
@@ -274,20 +145,25 @@
                 </StackPanel>
 
                 <StackPanel HorizontalAlignment="Left"  Margin="5, 0">
-                    <TextBlock Margin="5, 0" Text="جزئیات آدرس  :"/>
+                    <TextBlock Margin="5, 0" Text="جزئیات آدرس  :" Style="{DynamicResource TextBlockStyleKey}"/>
                     <TextBox Padding="5, 0" MinWidth="200" MaxWidth="300" TextWrapping="Wrap"
                         Text="{Binding Path=AddressDetail}"/>
                 </StackPanel>
 
                 <StackPanel HorizontalAlignment="Left" Margin="5, 0">
-                    <TextBlock Margin="5, 0" Text="کد پستی  :"/>
+                    <TextBlock Margin="5, 0" Text="کد پستی  :" Style="{DynamicResource TextBlockStyleKey}"/>
                     <TextBox Padding="5, 0" MinWidth="120" HorizontalContentAlignment="Center" 
                         Text="{Binding  Path=PostalCode, 
                         Converter={StaticResource EditPostalCodeConverterKey}}"/>
                 </StackPanel>
 
-                <Button DockPanel.Dock="Left" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="20, 2, 2, 2" 
-                    Padding="3, 2" Content="حذف آدرس" Click="AddressDeleteButton_Click"
+                <customControls:ShapeTextButton DockPanel.Dock="Left" HorizontalAlignment="Right" VerticalAlignment="Center" 
+                    Margin="20, 2, 2, 2" Padding="15, 5" Content="حذف آدرس" Click="AddressDeleteButton_Click"
+                    DefaultButtonShape="{StaticResource DeleteAddressBevelShape}"
+                    MouseEnterButtonShape="{StaticResource DeleteAddressBevelShape}"
+                    MouseDownButtonShape="{StaticResource DeleteAddressBevelShape}"
+                    ControlDisabledButtonShape="{StaticResource DeleteAddressBevelShape}"
+                    GetContentBrush_ForWhichButtonShapeProperty="Stroke"
                     Tag="{Binding Mode=OneWay, 
                     RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContentPresenter}, 
                     Path=(ItemsControl.AlternationIndex)}"/>
@@ -303,7 +179,13 @@
                         Source="{Binding Path=Addresses}"/>
                 </StackPanel.Resources>
 
-                <Button HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0, 3" Padding="5, 2" Content="اضافه کردن"
+                <customControls:ShapeTextButton HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0, 3" 
+                    Padding="15, 5" Content="اضافه کردن"
+                    DefaultButtonShape="{StaticResource AddAddressBevelShape}"
+                    MouseEnterButtonShape="{StaticResource AddAddressBevelShape}"
+                    MouseDownButtonShape="{StaticResource AddAddressBevelShape}"
+                    ControlDisabledButtonShape="{StaticResource AddAddressBevelShape}"
+                    GetContentBrush_ForWhichButtonShapeProperty="Stroke"
                     Command="{Binding Source={StaticResource CollectionViewOperationsKey},
                     Path= AddItemToCollectionViewCommand}"
                     CommandParameter="{Binding 
@@ -320,62 +202,41 @@
         </DataTemplate>
 
 
-        <DataTemplate x:Key="DataGridRowDetailsItemTemplateKey">
-            <Border Name="DataGridRowDetailsItemBorder" Margin="0, 1"  BorderThickness="2" BorderBrush="Transparent" 
-                Padding="5, 2" CornerRadius="5" Background="Transparent">
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontWeight="Bold" Text="آدرس شماره "/>
-                        <TextBlock FontWeight="Bold" 
-                            Text="{Binding Mode=OneWay, 
-                            RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ContentPresenter}}, 
-                            Path=(ItemsControl.AlternationIndex), 
-                            Converter={StaticResource AddressItemNumberConverterKey}}"/>
-                        <TextBlock FontWeight="Bold" Text=" :"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontWeight="Bold" Margin="5, 0" Text="استان"/>
-                        <TextBlock Margin="5, 0" Text="{Binding Path=Province}"/>
-                        <TextBlock Margin="5, 0" Text="،  "/>
-                        <TextBlock FontWeight="Bold" Margin="5, 0" Text="شهر"/>
-                        <TextBlock Margin="5, 0" Text="{Binding Path=City}"/>
-                        <TextBlock Margin="5, 0" Text="،  "
-                            Visibility="{Binding Path=AddressDetail, 
-                            Converter={StaticResource TextBlockVisibilityForAddressItemsConverterKey}}"/>
-                        <TextBlock FontWeight="Bold" Margin="5, 0" Text="جزئیات آدرس :  "
-                            Visibility="{Binding Path=AddressDetail, 
-                            Converter={StaticResource TextBlockVisibilityForAddressItemsConverterKey}}"/>
-                        <TextBlock Margin="5, 0" MaxWidth="750" TextWrapping="Wrap" Text="{Binding Path=AddressDetail}"/>
-                        <TextBlock Margin="5, 0" Text="،  "
-                            Visibility="{Binding Path=PostalCode, 
-                            Converter={StaticResource TextBlockVisibilityForAddressItemsConverterKey}}"/>
-                        <TextBlock FontWeight="Bold" Margin="5, 0" Text="کد پستی  :  "
-                            Visibility="{Binding Path=PostalCode, 
-                            Converter={StaticResource TextBlockVisibilityForAddressItemsConverterKey}}"/>
-                        <TextBlock Margin="5, 0" Text="{Binding Path=PostalCode}"/>
-                    </StackPanel>
-                    
-                </StackPanel>
-            </Border>
-            <DataTemplate.Triggers>
-                <Trigger SourceName="DataGridRowDetailsItemBorder" Property="IsMouseOver" Value="True">
-                    <Setter TargetName="DataGridRowDetailsItemBorder" Property="BorderBrush" Value="DeepSkyBlue"/>
-                </Trigger>
-            </DataTemplate.Triggers>
-        </DataTemplate>
-
-
-        <DataTemplate x:Key="DataGridRowDetailsTemplateKey">
-            <ItemsControl Margin="30, 2"
-                ItemsSource="{Binding Path=Addresses}"
-                ItemTemplate="{StaticResource DataGridRowDetailsItemTemplateKey}"
-                AlternationCount="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Items.Count}"
-                VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard"/>
-        </DataTemplate>
-
-
     </Window.Resources>
+
+
+    <!--  در نسخه ی Visual Studio 2022 ، نمیدونم چرا فقط استایلِ Window ، اون هم فقط در xaml disigner ، سِت و تنظیم نمیشه .
+    
+              برای اینکه زمانی که استایلِ یک کنترلی ، زمان xaml designer یا همون در زمان طراحی کار نمیکنه و -
+              بخوایم فقط استایلِ زمانِ طراحیِ اون کنترل را به دلخواه خودمون تغییر بدیم ، مثلا استایلی را برای کنترل Window -
+              اون هم فقط در زمان طراحی در xaml ، تغییر بدیم ، باید از پروپرتیِ زیر استفاده کنیم :
+    
+              <d:DesignerProperties.DesignStyle>
+    
+              نکات :
+              - این پروپرتی ، در مایکروسافت سندش موجود نیست و اطلاعاتی در این باره نوشته نیست .
+    
+              - تاثیرش ، فقط در زمان طراحی یا همون xaml designer هست . یعنی زمان اجرای برنامه ، تاثیری نداره .
+    
+              - این پروپرتی را نمیشه در فایل هایی که استایل ها را تعریف کردیم ، مثلا در DarkStyle.xaml یا حتی در App.xaml تعریف کنیم . -
+              حتما باید برای هر Window و درون فایلِ xaml ای که برای هر Window تعریف میکنیم ، تعریف کنیم . مثلا در همین فایل و در همینجا . -
+              یعنی برای هر Window ای که تعریف میکنیم ، باید برای هر کدوم شون ، این پروپرتی را مجزا مقداردهی کنیم .
+    
+              - این پروپرتی شاید فقط برای نوع Window بکار بره . شاید برای کنترل های دیگه بکار نره . دقیقا نمیدونم .
+    -->
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="{x:Type Window}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="FontFamily" Value="Calibri"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="Background" Value="#FF2D2D2D"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="3"/>
+    </WindowChrome.WindowChrome>
 
 
     <Grid>
@@ -388,104 +249,163 @@
         </Grid.RowDefinitions>
 
 
-        <Grid Grid.Row="1" Name="SearchAndGroupingGrid" FlowDirection="RightToLeft" Margin="5, 20">
+        <userControl:TitleBarUserControl Grid.Row="0" x:Name="TitleBarUserControl"
+            TitleBarMainIconGeometry="{StaticResource PhoneBookGeometry}">
+
+            <userControl:TitleBarUserControl.TitleBarAddControls>
+                <customControls:ShapeTextButton Tag="CloseButton" DockPanel.Dock="Right" Margin="0, 8, 10, 8" 
+                    DefaultButtonShape="{StaticResource CloseShape}"
+                    MouseEnterButtonShape="{StaticResource CloseShape}"
+                    MouseDownButtonShape="{StaticResource CloseShape}"
+                    ControlDisabledButtonShape="{StaticResource CloseShape}" 
+                    GetContentBrush_ForWhichButtonShapeProperty="Stroke"
+                    Click="CloseButton_Click"/>
+
+                <customControls:ShapeTextButton Tag="MinimizeButton" DockPanel.Dock="Right" Margin="0, 8, 10, 8" 
+                    DefaultButtonShape="{StaticResource MinimizeShape}"
+                    MouseEnterButtonShape="{StaticResource MinimizeShape}"
+                    MouseDownButtonShape="{StaticResource MinimizeShape}"
+                    ControlDisabledButtonShape="{StaticResource MinimizeShape}" 
+                    GetContentBrush_ForWhichButtonShapeProperty="Stroke"
+                    Click="MinimizeButton_Click"/>
+
+                <Border BorderThickness="0, 0, 1, 0" BorderBrush="LightGray" DockPanel.Dock="Right" 
+                    Margin="0, 8, 10, 8"  />
+
+                <customControls:ShapeTextButton Tag="SettingButton" DockPanel.Dock="Right" Margin="0, 8, 10, 8" 
+                    DefaultButtonShape="{StaticResource SettingShape}"
+                    MouseEnterButtonShape="{StaticResource SettingShape}"
+                    MouseDownButtonShape="{StaticResource SettingShape}"
+                    ControlDisabledButtonShape="{StaticResource SettingShape}" 
+                    GetContentBrush_ForWhichButtonShapeProperty="Fill"
+                    Click="SettingButton_Click"/>
+
+            </userControl:TitleBarUserControl.TitleBarAddControls>
+
+        </userControl:TitleBarUserControl>
+
+
+        <Grid Grid.Row="1" FlowDirection="RightToLeft" Margin="5, 20">
             <Grid.RowDefinitions>
                 <RowDefinition Name="SearchButtonRow" Height="Auto"/>
-                <RowDefinition Name="SearchingRow" Height="Auto"/>
-                <RowDefinition Name="GroupingRow" Height="Auto"/>
+                <RowDefinition Name="SearchAndGroupingRow" Height="Auto"/>
                 <RowDefinition Name="CollapseButtonRow" Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Button Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0, 5" Padding="5, 2" Content="جستجو"/>
+            <customControls:ShapeTextButton Grid.Row="0" x:Name="SearchButton" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                Margin="0, 5" Padding="15, 5" Content="جستجو" 
+                DefaultButtonShape="{StaticResource SearchBevelShape}"
+                MouseEnterButtonShape="{StaticResource SearchBevelShape}"
+                MouseDownButtonShape="{StaticResource SearchBevelShape}"
+                ControlDisabledButtonShape="{StaticResource SearchBevelShape}"
+                GetContentBrush_ForWhichButtonShapeProperty="Stroke"
+                Click="SearchButton_Click"/>
 
-            <WrapPanel Grid.Row="1" Margin="0, 10">
-                <StackPanel Margin="10, 10">
-                    <TextBlock Text="نام  :"/>
-                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26" 
+            <Border Name="SearchAndGroupingBorder" Grid.Row="1" BorderThickness="1" BorderBrush="DeepSkyBlue" 
+                CornerRadius="5" Padding="5, 10" Visibility="Collapsed">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Name="SearchingRow"/>
+                        <RowDefinition Name="GroupingRow"/>
+                    </Grid.RowDefinitions>
+
+                    <WrapPanel Grid.Row="0" Margin="0, 10">
+                        <StackPanel Margin="10, 10">
+                            <TextBlock Text="نام  :" Style="{DynamicResource TextBlockStyleKey}"/>
+                            <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26" 
                         Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
                         Source={StaticResource CollectionViewOperationsKey},
                         Path=FilterFirstName}"
                         TextChanged="FilterFirstNameTextBox_TextChanged"/>
-                </StackPanel>
+                        </StackPanel>
 
-                <StackPanel Margin="10, 10">
-                    <TextBlock Text="نام خانوادگی  :"/>
-                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        <StackPanel Margin="10, 10">
+                            <TextBlock Text="نام خانوادگی  :" Style="{DynamicResource TextBlockStyleKey}"/>
+                            <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
                         Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
                         Source={StaticResource CollectionViewOperationsKey},
                         Path=FilterLastName}"
                         TextChanged="FilterLastNameTextBox_TextChanged"/>
-                </StackPanel>
+                        </StackPanel>
 
-                <StackPanel Margin="10, 10">
-                    <TextBlock Text="شماره همراه  :"/>
-                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        <StackPanel Margin="10, 10">
+                            <TextBlock Text="شماره همراه  :" Style="{DynamicResource TextBlockStyleKey}"/>
+                            <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
                         Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
                         Source={StaticResource CollectionViewOperationsKey},
                         Path=FilterMobileNumber}"
                         TextChanged="FilterMobileNumbersTextBox_TextChanged"/>
-                </StackPanel>
+                        </StackPanel>
 
-                <StackPanel Margin="10, 10">
-                    <TextBlock Text="استان  :"/>
-                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        <StackPanel Margin="10, 10">
+                            <TextBlock Text="استان  :" Style="{DynamicResource TextBlockStyleKey}"/>
+                            <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
                         Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
                         Source={StaticResource CollectionViewOperationsKey},
                         Path=FilterProvince}"
                         TextChanged="FilterProvincesTextBox_TextChanged"/>
-                </StackPanel>
+                        </StackPanel>
 
-                <StackPanel Margin="10, 10">
-                    <TextBlock Text="شهر  :"/>
-                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        <StackPanel Margin="10, 10">
+                            <TextBlock Text="شهر  :" Style="{DynamicResource TextBlockStyleKey}"/>
+                            <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
                         Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
                         Source={StaticResource CollectionViewOperationsKey},
                         Path=FilterCity}"
                         TextChanged="FilterCitiesTextBox_TextChanged"/>
-                </StackPanel>
+                        </StackPanel>
 
-                <StackPanel Margin="10, 10">
-                    <TextBlock Text="جزئیات آدرس  :"/>
-                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        <StackPanel Margin="10, 10">
+                            <TextBlock Text="جزئیات آدرس  :" Style="{DynamicResource TextBlockStyleKey}"/>
+                            <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
                         Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
                         Source={StaticResource CollectionViewOperationsKey},
                         Path=FilterAddressDetail}"
                         TextChanged="FilterAddressDetailsTextBox_TextChanged"/>
-                </StackPanel>
+                        </StackPanel>
 
-                <StackPanel Margin="10, 10">
-                    <TextBlock Text="کد پستی  :"/>
-                    <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
+                        <StackPanel Margin="10, 10">
+                            <TextBlock Text="کد پستی  :" Style="{DynamicResource TextBlockStyleKey}"/>
+                            <TextBox Margin="0, 10, 0, 0" MinWidth="100" MinHeight="26"
                         Text="{Binding Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged, 
                         Source={StaticResource CollectionViewOperationsKey},
                         Path=FilterPostalCode}"
                         TextChanged="FilterPostalCodesTextBox_TextChanged"/>
-                </StackPanel>
-            </WrapPanel>
+                        </StackPanel>
+                    </WrapPanel>
 
-            <StackPanel Grid.Row="2" Margin="0, 0">
-                <TextBlock Text="گروه بندی ستون  :"/>
-                <ComboBox Margin="0, 10, 0, 0" HorizontalAlignment="Left" MinWidth="200" MinHeight="26"
+                    <StackPanel Grid.Row="1" Margin="0, 0">
+                        <TextBlock Text="گروه بندی ستون  :" Style="{DynamicResource TextBlockStyleKey}"/>
+                        <ComboBox Margin="0, 10, 0, 0" HorizontalAlignment="Left" MinWidth="200" MinHeight="26"
                     ItemsSource="{StaticResource GroupingComboBoxSourceArrayKey}"
                     SelectedItem="{Binding Mode=OneWayToSource, Source={StaticResource CollectionViewOperationsKey},
                     Path=GroupingProperty, 
-                    Converter={StaticResource PersonGroupingPropertyConverterKey}}"
-                    SelectionChanged="Selector_OnSelectionChanged">
+                    Converter={StaticResource PersonGroupingPropertyConverterKey}}">
 
-                    <behavior:Interaction.Triggers>
-                        <behavior:EventTrigger EventName="SelectionChanged">
-                            <behavior:InvokeCommandAction 
+                            <behavior:Interaction.Triggers>
+                                <behavior:EventTrigger EventName="SelectionChanged">
+                                    <behavior:InvokeCommandAction 
                                 Command="{Binding Source={StaticResource CollectionViewOperationsKey}, 
                                 Path= PersonGroupingCommand}" 
                                 CommandParameter="{Binding Mode=OneWay, 
                                 Source={StaticResource PeopleCollectionViewSourceKey}}"/>
-                        </behavior:EventTrigger>
-                    </behavior:Interaction.Triggers>
+                                </behavior:EventTrigger>
+                            </behavior:Interaction.Triggers>
 
-                </ComboBox>
-            </StackPanel>
+                        </ComboBox>
+                    </StackPanel>
 
-            <Button Grid.Row="3" Margin="0, 10, 0, 5" HorizontalAlignment="Left" Content="شکل مربوط به collupse به سمت بالا"/>
+                </Grid>
+            </Border>
+
+            <customControls:ShapeTextButton Grid.Row="2" x:Name="CollapseButton" Margin="0, 10, 0, 5" 
+                HorizontalAlignment="Left" Visibility="Collapsed"
+                DefaultButtonShape="{StaticResource CollapseBevelShape}"
+                MouseEnterButtonShape="{StaticResource CollapseBevelShape}"
+                MouseDownButtonShape="{StaticResource CollapseBevelShape}"
+                ControlDisabledButtonShape="{StaticResource CollapseBevelShape}"
+                GetContentBrush_ForWhichButtonShapeProperty="Stroke"
+                Click="CollapseButton_Click"/>
         </Grid>
 
 
@@ -493,22 +413,21 @@
               DataContext="{Binding Source={StaticResource PeopleCollectionViewSourceKey}}"
               ItemsSource="{Binding ValidatesOnExceptions=True}"
               RowValidationErrorTemplate="{StaticResource DataGridRowValidationErrorControlTemplateKey}"
-              BeginningEdit="PhoneBookDataGrid_BeginningEdit" 
-              RowEditEnding="PhoneBookDataGrid_RowEditEnding"
-              AddingNewItem="PhoneBookDataGrid_AddingNewItem"
-              PreviewKeyDown="PhoneBookDataGrid_PreviewKeyDown"
+              BeginningEdit="PhoneBookDataGrid_BeginningEdit" RowEditEnding="PhoneBookDataGrid_RowEditEnding"
+              AddingNewItem="PhoneBookDataGrid_AddingNewItem" PreviewKeyDown="PhoneBookDataGrid_PreviewKeyDown"
               ColumnWidth="Auto"
               
-              VirtualizingStackPanel.IsVirtualizing="True"
-              VirtualizingStackPanel.VirtualizationMode="Standard"
               AlternationCount="{Binding Count}"
               RowDetailsTemplate="{StaticResource DataGridRowDetailsTemplateKey}"
-              SelectionChanged="PhoneBookDataGrid_SelectionChanged"
-              Sorting="PhoneBookDataGrid_Sorting">
+              SelectionChanged="PhoneBookDataGrid_SelectionChanged" Sorting="PhoneBookDataGrid_Sorting">
 
+            <!--  چون فقط میخواهیم آیتمی به کالکشن RowValidationRules اضافه کنیم و این پروپرتی ، یک پروپرتیِ فقط خواندنی هست ، 
+            باید به این شیوه ، StaticResource اش  را مشخص کنیم .
+            -->
             <DataGrid.RowValidationRules>
                 <StaticResource ResourceKey="PersonValidationRuleKey"/>
             </DataGrid.RowValidationRules>
+
 
             <DataGrid.GroupStyle>
                 <!--   اول اینکه استایل هایی که برای DataGrid.GroupStyle تعریف میشود ، باید بصورت inline باشد .
@@ -534,14 +453,14 @@
                                             IsExpanded="True" BorderBrush="DeepSkyBlue" BorderThickness="2">
                                             <Expander.Header>
                                                 <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="{Binding Path=Name}" Margin="2, 0"/>
+                                                    <TextBlock Text="{Binding Path=Name}" Margin="2, 0" />
                                                     <TextBlock Text="|" Margin="12, 0"/>
-                                                    <TextBlock Text="تعداد اعضای این گروه  :" Margin="2, 0"/>
+                                                    <TextBlock Text="تعداد اعضای این گروه  :" Margin="2, 0" />
                                                     <TextBlock Text="{Binding Path=ItemCount}" Margin="2, 0"/>
                                                 </StackPanel>
                                             </Expander.Header>
                                             <Expander.Content>
-                                                <ItemsPresenter/>
+                                                <ItemsPresenter TextBlock.Foreground="{StaticResource DataGrid_GroupContentBrush}"/>
                                             </Expander.Content>
                                         </Expander>
 
@@ -553,15 +472,6 @@
                 </GroupStyle>
             </DataGrid.GroupStyle>
 
-            <!--  برای ایجاد Control Template برای سطرها ، در استایلِ DataGridRow ، پروپرتیِ Template را مقدار دهید .
-            در لینک زیر ، در استایلِ DataGridRow ، بخش Template اش را ببینید .
-            https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/datagrid-styles-and-templates?view=netframeworkdesktop-4.8#datagridrow-parts
-            -->
-            <DataGrid.RowStyle>
-                <Style TargetType="{x:Type DataGridRow}">
-                    <Setter Property="Background" Value="LightGray"/>
-                </Style>
-            </DataGrid.RowStyle>
 
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ردیف" IsReadOnly="True" MinWidth="50"
@@ -591,4 +501,6 @@
 
 
     </Grid>
+
+
 </Window>

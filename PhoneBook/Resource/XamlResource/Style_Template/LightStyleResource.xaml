@@ -277,6 +277,38 @@
     <SolidColorBrush x:Key="MenuItem_TopLevelHeader_AllBrush" Color="LimeGreen"/>
 
 
+
+
+    <SolidColorBrush x:Key="DataGridColumnHeader_AscendDescendBackground" Color="#33004100"/>
+
+
+
+
+    <SolidColorBrush x:Key="DataGridRow_BackgroundBrush" Color="#FFEAEBEB"/>
+
+    <Color x:Key="DataGridRow_SelectedRowBackgroundColor" A="255" R="220" G="220" B="220"/>
+
+    <Color x:Key="DataGridRow_SelectedRowForegroundColor" A="255" R="15" G="15" B="15"/>
+
+    <Color x:Key="DataGridRow_SelectedRowBackgroundInActiveColor" A="255" R="220" G="220" B="220"/>
+
+    <Color x:Key="DataGridRow_SelectedRowForegroundInActiveColor" A="255" R="15" G="15" B="15"/>
+
+
+
+    <SolidColorBrush x:Key="DataGrid_Background" Color="Transparent"/>
+
+    <SolidColorBrush x:Key="DataGrid_Foreground" Color="Black"/>
+
+    <SolidColorBrush x:Key="DataGrid_HorizontalGridLinesBrush" Color="#FF464646"/>
+
+    <SolidColorBrush x:Key="DataGrid_VerticalGridLinesBrush" Color="#FF464646"/>
+
+    <SolidColorBrush x:Key="DataGrid_GroupContentBrush" Color="Black"/>
+
+
+
+
     <!--#endregion-->
 
 
@@ -874,6 +906,120 @@
     </Style>
 
     <!--#endregion-->
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  استایل برای  DataGrid و زیر مجموعه هایش -->
+
+
+    <!--#region  استایل برای  ColumnHeaderGripper -->
+
+
+    <Style x:Key="ColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="Width" Value="3" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Cursor" Value="SizeWE" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  استایل برای  DataGridColumnHeader -->
+
+
+    <Style x:Key="DataGridColumnHeaderStyleKey" TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Background" Value="Black"/>
+        <Setter Property="Padding" Value="3, 0"/>
+        <Setter Property="Template" Value="{StaticResource DataGridColumnHeaderControlTemplateKey}"/>
+    </Style>
+
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  استایل برای  DataGridRowHeader -->
+
+    <Style x:Key="DataGridRowHeaderStyleKey" TargetType="{x:Type DataGridRowHeader}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Background" Value="{StaticResource DataGridRow_BackgroundBrush}"/>
+
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                AncestorType={x:Type DataGridRow}}, Path=(Validation.HasError)}" Value="False">
+                <Setter Property="Width" Value="0"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  استایل برای  DataGridRow -->
+
+
+    <Style x:Key="DataGridRowStyleKey" TargetType="{x:Type DataGridRow}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Background" Value="{StaticResource DataGridRow_BackgroundBrush}"/>
+        <Setter Property="HeaderStyle" Value="{StaticResource DataGridRowHeaderStyleKey}"/>
+
+        <Style.Resources>
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" 
+                    Color="{StaticResource DataGridRow_SelectedRowBackgroundColor}"/>
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" 
+                    Color="{StaticResource DataGridRow_SelectedRowForegroundColor}"/>
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" 
+                    Color="{StaticResource DataGridRow_SelectedRowBackgroundInActiveColor}"/>
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" 
+                    Color="{StaticResource DataGridRow_SelectedRowForegroundInActiveColor}"/>
+        </Style.Resources>
+    </Style>
+
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  استایل برای  DataGrid -->
+
+
+    <Style TargetType="{x:Type DataGrid}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True"/>
+        <Setter Property="VirtualizingStackPanel.VirtualizationMode" Value="Standard"/>
+        <Setter Property="Background" Value="{StaticResource DataGrid_Background}"/>
+        <Setter Property="Foreground" Value="{StaticResource DataGrid_Foreground}"/>
+        <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource DataGrid_HorizontalGridLinesBrush}"/>
+        <Setter Property="VerticalGridLinesBrush" Value="{StaticResource DataGrid_VerticalGridLinesBrush}"/>
+        <!--  برای ایجاد Control Template برای سطرها ، در استایلِ DataGridRow ، پروپرتیِ Template را مقدار دهید .
+            در لینک زیر ، در استایلِ DataGridRow ، بخش Template اش را ببینید .
+            https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/datagrid-styles-and-templates?view=netframeworkdesktop-4.8#datagridrow-parts
+            -->
+        <Setter Property="RowStyle" Value="{StaticResource DataGridRowStyleKey}"/>
+        <Setter Property="ColumnHeaderStyle" Value="{StaticResource DataGridColumnHeaderStyleKey}"/>
+    </Style>
+
+
+    <!--#endregion-->
+
 
     <!--#endregion-->
 

@@ -1,0 +1,206 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:bidingConverter="clr-namespace:PhoneBook.Resource.XamlResource.IconResource"
+                    xmlns:customControls ="clr-namespace:PoshtibangirTolo.View.CustomControl"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+
+
+
+    <bidingConverter:RectConverter x:Key="RectConverter"/>
+
+
+    <PathGeometry x:Key="PhoneBookGeometry" 
+        Figures="M117.1000,0.000 C144.940,1.174 197.675,67.672 216.000,86.000 C223.431,93.432 239.675,102.507 234.1000,121.000 C232.577,130.584 223.254,137.821 218.000,145.000 C198.784,171.258 187.754,207.713 211.1000,238.1000 C228.665,255.332 245.335,271.668 261.1000,288.000 C277.699,303.699 293.289,325.957 313.000,337.000 C322.233,342.173 339.799,347.573 355.000,344.1000 C381.531,340.509 417.051,301.514 436.000,307.1000 C452.600,313.682 506.277,376.280 522.000,391.1000 C528.843,398.842 544.344,408.077 542.000,423.000 C539.483,439.027 468.018,512.594 452.1000,522.000 C349.316,586.939 263.151,489.996 209.1000,438.000 C146.475,375.855 60.386,303.496 15.000,225.1000 C-14.159,176.211 4.711,108.696 32.1000,73.000 C49.962,51.597 94.060,14.756 117.1000,0.000 ZM120.000,54.1000 C92.061,91.360 53.692,100.805 43.1000,158.000 C34.388,214.721 116.586,282.977 144.000,310.1000 C183.014,350.881 220.372,393.866 264.000,428.1000 C287.818,448.181 308.043,472.796 334.1000,488.1000 C358.677,503.233 401.925,501.883 425.000,487.1000 C448.902,473.619 472.528,444.144 488.1000,422.000 C468.335,401.002 447.665,379.998 427.000,358.1000 C403.904,371.799 380.103,397.426 338.000,390.000 C283.042,380.306 269.288,349.635 234.1000,321.1000 C198.300,292.422 136.584,239.067 157.000,163.1000 C162.436,144.012 174.926,131.804 184.000,115.1000 C174.828,103.722 133.448,59.364 120.000,54.1000 Z" />
+
+
+    <DrawingImage x:Key="WindowIconDrawingImage">
+        <DrawingImage.Drawing>
+            <GeometryDrawing Geometry="{StaticResource PhoneBookGeometry}" Brush="White" />
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+
+    <Path x:Key="PoshtibangirToloShape"  Data="M323.000,1.000 C479.495,-0.840 660.146,12.283 736.000,88.000 C743.666,97.666 751.334,107.334 759.000,117.000 C767.918,137.843 764.015,234.984 755.000,250.000 C672.011,388.221 105.084,399.655 15.000,259.000 C2.881,240.077 3.999,211.832 4.000,180.000 C4.001,157.827 1.508,130.263 8.000,114.000 C37.020,41.302 149.666,23.309 235.000,8.000 C264.330,5.667 293.670,3.333 323.000,1.000 ZM267.000,665.000 C169.047,666.190 31.928,614.582 7.000,545.000 C-0.119,525.128 4.000,490.913 4.000,466.000 C3.999,421.758 2.094,385.637 21.000,362.000 C22.333,362.333 23.667,362.667 25.000,363.000 C76.703,431.701 205.983,466.230 324.000,466.000 C324.000,467.000 324.000,468.000 324.000,469.000 C286.714,511.218 269.139,589.935 267.000,665.000 ZM521.000,423.000 C571.254,428.435 600.784,453.176 644.000,466.000 C659.998,468.666 676.002,471.334 692.000,474.000 C741.771,506.216 812.974,702.667 799.000,759.000 C799.667,776.998 800.333,795.002 801.000,813.000 C792.632,871.562 785.533,973.705 743.000,992.000 C700.238,1010.394 626.408,960.110 600.000,943.000 C495.003,874.970 430.415,775.937 388.000,644.000 C377.249,610.559 349.455,545.885 363.000,505.000 C367.049,492.779 429.169,481.163 446.000,472.000 C461.665,460.001 477.335,447.999 493.000,436.000 C502.332,431.667 511.668,427.333 521.000,423.000 ZM528.000,460.000 C486.698,495.241 467.533,503.491 413.000,530.000 C413.816,545.049 429.888,632.677 442.000,641.000 C490.662,633.334 539.338,625.666 588.000,618.000 C588.000,617.333 588.000,616.667 588.000,616.000 C568.002,564.005 547.998,511.995 528.000,460.000 ZM725.000,614.000 C686.337,620.999 647.663,628.001 609.000,635.000 C644.996,723.658 681.004,812.342 717.000,901.000 C726.666,881.002 736.334,860.998 746.000,841.000 C761.692,780.960 755.848,660.500 732.000,614.000 C729.667,614.000 727.333,614.000 725.000,614.000 ZM21.000,661.000 C32.332,670.999 43.668,681.001 55.000,691.000 C75.745,706.603 101.683,720.778 128.000,730.000 C159.997,737.666 192.003,745.334 224.000,753.000 C242.331,755.000 260.668,757.000 279.000,759.000 C294.047,851.193 355.336,929.753 423.000,971.000 C396.469,979.043 346.469,972.815 322.000,969.000 C196.894,949.492 51.051,949.694 9.000,851.000 C-6.705,814.140 1.221,680.976 21.000,661.000 Z">
+        <Path.LayoutTransform>
+            <TransformGroup>
+                <ScaleTransform ScaleX="0.0296" ScaleY="0.0296"/>
+            </TransformGroup>
+        </Path.LayoutTransform>
+    </Path>
+
+
+    <Path x:Key="CloseShape" Data="M2,2  L22,22  M22,2  L2,22" StrokeThickness="3" StrokeStartLineCap="Triangle" StrokeEndLineCap="Triangle"/>
+
+
+    <Path x:Key="MinimizeShape" Data="M2,23 L22,23" StrokeThickness="3"/>
+
+
+    <Path x:Key="SplitterShape" Data="M0,0 L0,24" StrokeThickness="3" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
+
+
+    <Path x:Key="SettingShape" Data="M8.419,0.837 C9.296,0.820 13.203,0.639 13.581,0.977 C13.767,1.884 13.954,2.791 14.140,3.698 C15.132,3.896 15.937,4.580 16.651,5.093 C17.508,4.869 18.648,4.167 19.442,4.256 C20.279,5.721 21.116,7.186 21.953,8.651 C21.930,8.698 21.907,8.744 21.884,8.791 C21.186,9.395 20.488,10.000 19.791,10.605 C19.910,11.660 19.700,13.196 20.140,13.814 C20.744,14.326 21.349,14.837 21.953,15.349 C21.907,15.395 21.860,15.442 21.814,15.488 C20.977,16.930 20.139,18.372 19.302,19.814 C18.395,19.512 17.488,19.209 16.581,18.907 C16.079,19.503 15.007,20.113 14.140,20.302 C13.954,21.256 13.767,22.209 13.581,23.163 C12.704,23.180 8.797,23.361 8.419,23.023 C8.233,22.116 8.046,21.209 7.860,20.302 C6.865,20.045 6.087,19.436 5.349,18.907 C4.487,19.133 3.362,19.835 2.558,19.744 C1.721,18.279 0.884,16.814 0.047,15.349 C0.767,14.698 1.488,14.046 2.209,13.395 C2.077,12.464 2.112,11.474 2.209,10.535 C1.488,9.907 0.767,9.279 0.047,8.651 C0.930,7.163 1.814,5.674 2.698,4.186 C3.605,4.488 4.512,4.791 5.419,5.093 C5.945,4.471 6.985,3.941 7.860,3.698 C8.046,2.744 8.233,1.791 8.419,0.837 ZM10.302,4.326 C9.605,4.488 8.907,4.651 8.209,4.814 C5.964,5.699 4.207,7.595 3.535,10.047 C2.158,15.068 6.656,20.504 11.698,19.674 C21.314,18.093 20.889,4.196 10.302,4.326 Z" RenderTransformOrigin="0.5,0.5">
+        <Path.RenderTransform>
+            <TransformGroup>
+                <TranslateTransform X="1"/>
+            </TransformGroup>
+        </Path.RenderTransform>
+    </Path>
+
+
+    <Path x:Key="HelpShape" Data="M199.000,0.000 C298.671,7.627 430.094,127.190 418.000,221.000 C416.492,232.698 422.356,250.832 416.000,262.000 C377.347,329.919 324.217,378.676 278.000,438.000 C267.738,451.172 269.761,468.486 264.000,487.000 C257.667,502.332 251.333,517.668 245.000,533.000 C243.667,544.332 242.333,555.668 241.000,567.000 C234.418,578.734 202.912,592.460 186.000,596.000 C153.433,602.816 120.495,517.100 133.000,479.000 C137.000,470.001 141.000,460.999 145.000,452.000 C144.333,446.334 143.667,440.666 143.000,435.000 C175.093,354.678 243.422,300.839 295.000,239.000 C309.292,221.865 346.286,165.624 332.000,135.000 C315.949,100.593 236.584,103.990 198.000,121.000 C122.599,154.241 107.262,219.379 80.000,300.000 C75.121,314.429 88.857,325.594 86.000,338.000 C85.000,337.667 84.000,337.333 83.000,337.000 C42.258,287.972 6.705,255.931 7.000,186.000 C4.667,174.668 2.333,163.332 0.000,152.000 C4.062,131.103 24.803,116.317 22.000,98.000 C56.674,75.381 70.600,42.817 112.000,23.000 C130.665,16.001 149.335,8.999 168.000,2.000 C178.332,1.333 188.668,0.667 199.000,0.000 ZM410.000,270.000 L410.000,270.000 ZM406.000,280.000 L406.000,280.000 ZM172.000,634.000 C173.000,634.333 174.000,634.667 175.000,635.000 C174.000,634.667 173.000,634.333 172.000,634.000 ZM158.000,636.000 C215.203,640.533 268.785,654.658 289.000,701.000 C290.333,712.666 291.667,724.334 293.000,736.000 C298.301,753.704 291.275,775.786 280.000,786.000 C241.457,820.917 147.159,795.087 120.000,756.000 C113.258,746.296 101.111,699.348 94.000,696.000 C96.714,684.462 114.710,668.536 125.000,671.000 C125.353,664.800 123.395,664.580 120.000,660.000 C120.333,659.000 120.667,658.000 121.000,657.000 C124.000,656.000 127.000,655.000 130.000,654.000 C126.289,650.351 126.751,650.412 127.000,642.000 C135.096,644.625 147.962,640.556 158.000,636.000 Z" RenderTransformOrigin="0.5,0.5">
+        <Path.RenderTransform>
+            <TransformGroup>
+                <TranslateTransform X="5" Y="0.8"/>
+            </TransformGroup>
+        </Path.RenderTransform>
+        <Path.LayoutTransform>
+            <TransformGroup>
+                <ScaleTransform ScaleY="0.028" ScaleX="0.032"/>
+            </TransformGroup>
+        </Path.LayoutTransform>
+    </Path>
+
+
+    <Path x:Key="AlarmShape" Fill="Yellow" Data="M20.818,19.509 C18.346,19.509 15.872,19.509 13.400,19.509 C13.327,19.945 13.255,20.382 13.182,20.818 C12.153,21.493 12.058,21.932 10.127,21.909 C9.611,21.353 9.088,21.231 8.818,20.382 C8.629,20.139 8.680,20.191 8.600,19.727 C6.128,19.727 3.654,19.727 1.182,19.727 C1.021,19.281 0.963,18.707 0.964,17.982 C2.828,16.793 3.998,13.987 4.673,11.655 C5.281,9.551 4.515,6.916 5.545,5.327 C6.345,4.600 7.146,3.873 7.945,3.145 C8.309,3.073 8.673,3.000 9.036,2.927 C9.036,2.418 9.036,1.909 9.036,1.400 C9.932,0.573 10.195,0.271 12.091,0.309 C12.455,0.745 12.818,1.182 13.182,1.618 C13.182,2.055 13.182,2.491 13.182,2.927 C13.473,3.000 13.764,3.073 14.055,3.145 C14.942,3.752 16.258,4.937 16.673,5.982 C17.576,8.258 17.040,11.670 17.982,13.836 C18.803,15.724 20.753,17.150 20.818,19.509 ZM10.127,2.491 C10.709,2.491 11.291,2.491 11.873,2.491 C11.873,2.273 11.873,2.055 11.873,1.836 C11.379,1.570 11.383,1.465 10.564,1.400 C10.319,1.855 10.236,1.794 10.127,2.491 Z" RenderTransformOrigin="0.5,0.5">
+        <Path.RenderTransform>
+            <TransformGroup>
+                <TranslateTransform X="1.2" Y="0.9"/>
+            </TransformGroup>
+        </Path.RenderTransform>
+    </Path>
+
+
+    <!--  بخاطر ساختار کنترل ShapeTextButton ، به ازای هر یک از شی ای از این نوع کنترل ها ، یک شی Path جدید باید بسازیم .
+    
+    چون در متد ButtonShape_PropertyChanged در ShapeTextButton مشخص کردیم که هر شی Path ای که اضافه میشود ، به عنوان والد منطقیِ شیِ 
+    ShapeTextButton اضافه شود تا بتوانیم در شیِ Path ئه مربوطه ، Binding به ShapeTextButton انجام دهیم .
+    و از آنجایی هم که هر کنترل ، فقط یک والد منطقی میپذیرد ، پس یک شی از کنترل Path ، نمیتواند چندین والد یا همان به چندین شی از ShapeTextButton مرتبط باشد .
+    -->
+    <Path x:Key="AddMobileBevelShape" StrokeThickness="2">
+        <Path.Data>
+            <RectangleGeometry  RadiusX="6" RadiusY="6">
+                <RectangleGeometry.Rect>
+                    <MultiBinding Converter="{StaticResource RectConverter}">
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type customControls:ShapeTextButton}}" Path="ActualWidth"/>
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type customControls:ShapeTextButton}}" Path="ActualHeight"/>
+                    </MultiBinding>
+                </RectangleGeometry.Rect>
+            </RectangleGeometry>
+        </Path.Data>
+    </Path>
+
+
+    <!--  بخاطر ساختار کنترل ShapeTextButton ، به ازای هر یک از شی ای از این نوع کنترل ها ، یک شی Path جدید باید بسازیم .
+    
+    چون در متد ButtonShape_PropertyChanged در ShapeTextButton مشخص کردیم که هر شی Path ای که اضافه میشود ، به عنوان والد منطقیِ شیِ 
+    ShapeTextButton اضافه شود تا بتوانیم در شیِ Path ئه مربوطه ، Binding به ShapeTextButton انجام دهیم .
+    و از آنجایی هم که هر کنترل ، فقط یک والد منطقی میپذیرد ، پس یک شی از کنترل Path ، نمیتواند چندین والد یا همان به چندین شی از ShapeTextButton مرتبط باشد .
+    -->
+    <Path x:Key="DeleteMobileBevelShape" StrokeThickness="2">
+        <Path.Data>
+            <RectangleGeometry  RadiusX="6" RadiusY="6">
+                <RectangleGeometry.Rect>
+                    <MultiBinding Converter="{StaticResource RectConverter}">
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type customControls:ShapeTextButton}}" Path="ActualWidth"/>
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type customControls:ShapeTextButton}}" Path="ActualHeight"/>
+                    </MultiBinding>
+                </RectangleGeometry.Rect>
+            </RectangleGeometry>
+        </Path.Data>
+    </Path>
+
+
+    <!--  بخاطر ساختار کنترل ShapeTextButton ، به ازای هر یک از شی ای از این نوع کنترل ها ، یک شی Path جدید باید بسازیم .
+    
+    چون در متد ButtonShape_PropertyChanged در ShapeTextButton مشخص کردیم که هر شی Path ای که اضافه میشود ، به عنوان والد منطقیِ شیِ 
+    ShapeTextButton اضافه شود تا بتوانیم در شیِ Path ئه مربوطه ، Binding به ShapeTextButton انجام دهیم .
+    و از آنجایی هم که هر کنترل ، فقط یک والد منطقی میپذیرد ، پس یک شی از کنترل Path ، نمیتواند چندین والد یا همان به چندین شی از ShapeTextButton مرتبط باشد .
+    -->
+    <Path x:Key="AddAddressBevelShape" StrokeThickness="2">
+        <Path.Data>
+            <RectangleGeometry  RadiusX="6" RadiusY="6">
+                <RectangleGeometry.Rect>
+                    <MultiBinding Converter="{StaticResource RectConverter}">
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type customControls:ShapeTextButton}}" Path="ActualWidth"/>
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type customControls:ShapeTextButton}}" Path="ActualHeight"/>
+                    </MultiBinding>
+                </RectangleGeometry.Rect>
+            </RectangleGeometry>
+        </Path.Data>
+    </Path>
+
+
+    <!--  بخاطر ساختار کنترل ShapeTextButton ، به ازای هر یک از شی ای از این نوع کنترل ها ، یک شی Path جدید باید بسازیم .
+    
+    چون در متد ButtonShape_PropertyChanged در ShapeTextButton مشخص کردیم که هر شی Path ای که اضافه میشود ، به عنوان والد منطقیِ شیِ 
+    ShapeTextButton اضافه شود تا بتوانیم در شیِ Path ئه مربوطه ، Binding به ShapeTextButton انجام دهیم .
+    و از آنجایی هم که هر کنترل ، فقط یک والد منطقی میپذیرد ، پس یک شی از کنترل Path ، نمیتواند چندین والد یا همان به چندین شی از ShapeTextButton مرتبط باشد .
+    -->
+    <Path x:Key="DeleteAddressBevelShape" StrokeThickness="2">
+        <Path.Data>
+            <RectangleGeometry  RadiusX="6" RadiusY="6">
+                <RectangleGeometry.Rect>
+                    <MultiBinding Converter="{StaticResource RectConverter}">
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type customControls:ShapeTextButton}}" Path="ActualWidth"/>
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type customControls:ShapeTextButton}}" Path="ActualHeight"/>
+                    </MultiBinding>
+                </RectangleGeometry.Rect>
+            </RectangleGeometry>
+        </Path.Data>
+    </Path>
+
+
+    <!--  بخاطر ساختار کنترل ShapeTextButton ، به ازای هر یک از شی ای از این نوع کنترل ها ، یک شی Path جدید باید بسازیم .
+    
+    چون در متد ButtonShape_PropertyChanged در ShapeTextButton مشخص کردیم که هر شی Path ای که اضافه میشود ، به عنوان والد منطقیِ شیِ 
+    ShapeTextButton اضافه شود تا بتوانیم در شیِ Path ئه مربوطه ، Binding به ShapeTextButton انجام دهیم .
+    و از آنجایی هم که هر کنترل ، فقط یک والد منطقی میپذیرد ، پس یک شی از کنترل Path ، نمیتواند چندین والد یا همان به چندین شی از ShapeTextButton مرتبط باشد .
+    -->
+    <Path x:Key="SearchBevelShape" StrokeThickness="2">
+        <Path.Data>
+            <RectangleGeometry  RadiusX="6" RadiusY="6">
+                <RectangleGeometry.Rect>
+                    <MultiBinding Converter="{StaticResource RectConverter}">
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type customControls:ShapeTextButton}}" Path="ActualWidth"/>
+                        <Binding RelativeSource="{RelativeSource Mode=FindAncestor, 
+                            AncestorType={x:Type customControls:ShapeTextButton}}" Path="ActualHeight"/>
+                    </MultiBinding>
+                </RectangleGeometry.Rect>
+            </RectangleGeometry>
+        </Path.Data>
+    </Path>
+
+
+    <!--  بخاطر ساختار کنترل ShapeTextButton ، به ازای هر یک از شی ای از این نوع کنترل ها ، یک شی Path جدید باید بسازیم .
+    
+    چون در متد ButtonShape_PropertyChanged در ShapeTextButton مشخص کردیم که هر شی Path ای که اضافه میشود ، به عنوان والد منطقیِ شیِ 
+    ShapeTextButton اضافه شود تا بتوانیم در شیِ Path ئه مربوطه ، Binding به ShapeTextButton انجام دهیم .
+    و از آنجایی هم که هر کنترل ، فقط یک والد منطقی میپذیرد ، پس یک شی از کنترل Path ، نمیتواند چندین والد یا همان به چندین شی از ShapeTextButton مرتبط باشد .
+    -->
+    <Path x:Key="CollapseBevelShape" StrokeThickness="2" >
+        <Path.Data>
+            <GeometryGroup>
+                <EllipseGeometry Center="16,16" RadiusX="16" RadiusY="16"/>
+                <PathGeometry Figures="M9,20 L17,12 L23,20"/>
+            </GeometryGroup>
+        </Path.Data>
+    </Path>
+
+
+    <Path x:Key="SelectColorShape" Stroke="White" StrokeThickness="2" Fill="Transparent">
+        <Path.Data>
+            <RectangleGeometry Rect="1, 1, 18, 18"/>
+        </Path.Data>
+    </Path>
+
+</ResourceDictionary>

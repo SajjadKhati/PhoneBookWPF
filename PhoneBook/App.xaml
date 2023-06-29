@@ -9,6 +9,9 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Resource/XamlResource/Style_Template/TemplateResource.xaml"/>
                 <ResourceDictionary Source="Resource/XamlResource/Style_Template/DarkStyleResource.xaml"/>
+
+                <ResourceDictionary Source="Resource/XamlResource/IconResource/IconResource.xaml"/>
+                <ResourceDictionary Source="Resource/XamlResource/PhoneBookResource/PhoneBookResource.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

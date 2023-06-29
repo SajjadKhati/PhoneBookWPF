@@ -1,0 +1,69 @@
+﻿<Window x:Class="PhoneBook.Window.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:customControls ="clr-namespace:PoshtibangirTolo.View.CustomControl"
+        xmlns:userControl="clr-namespace:PoshtibangirTolo.View.UserControls"
+        xmlns:local="clr-namespace:PhoneBook.Window"
+        mc:Ignorable="d"
+        Title="تنظیمات" MinWidth="400" MinHeight="250" MaxWidth="800" MaxHeight="500" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" ShowInTaskbar="False" Icon="{StaticResource WindowIconDrawingImage}"
+        SizeToContent="WidthAndHeight" WindowStyle="None" Style="{DynamicResource {x:Type Window}}">
+
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="{x:Type Window}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="FontFamily" Value="Calibri"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="Background" Value="#FF2D2D2D"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Name="TitleBarRow" Height="Auto"/>
+            <RowDefinition Name="ContentRow" Height="*"/>
+            <RowDefinition Name="AboutRow" Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <userControl:TitleBarUserControl Grid.Row="0" TitleBarMainIconGeometry="{StaticResource PhoneBookGeometry}">
+
+            <userControl:TitleBarUserControl.TitleBarAddControls>
+                <customControls:ShapeTextButton Tag="CloseButton" DockPanel.Dock="Right" Margin="0, 8, 10, 8" 
+                    DefaultButtonShape="{StaticResource CloseShape}"
+                    MouseEnterButtonShape="{StaticResource CloseShape}"
+                    MouseDownButtonShape="{StaticResource CloseShape}"
+                    ControlDisabledButtonShape="{StaticResource CloseShape}" 
+                    GetContentBrush_ForWhichButtonShapeProperty="Stroke"
+                    Click="CloseButton_Click"/>
+            </userControl:TitleBarUserControl.TitleBarAddControls>
+
+        </userControl:TitleBarUserControl>
+
+        <GroupBox Grid.Row="1" Margin="5, 20" Header="زمینه ی رنگ" VerticalAlignment="Top">
+            <StackPanel Margin="5">
+                <TextBlock Margin="0, 5" Text="تعیین زمینه ی رنگ :" Style="{DynamicResource TextBlockStyleKey}"/>
+                <ComboBox Name="SelectStyleComboBox" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0, 5"
+                    MinWidth="200" MinHeight="28"   TabIndex="0" SelectionChanged="SelectStyleComboBox_SelectionChanged"
+                    SelectedIndex="{Binding Mode=TwoWay, Path=SelectedStyleIndex}">
+                        <system:String>زمینه رنگ تیره</system:String>
+                        <system:String>زمینه رنگ روشن</system:String>
+                    <ComboBox.ToolTip>
+                        <ToolTip>
+                            استایل یا همان زمینه ی رنگی را برای صفحه ی اصلی نرم افزار انتخاب کنید
+                        </ToolTip>
+                    </ComboBox.ToolTip>
+                </ComboBox>
+            </StackPanel>
+        </GroupBox>
+
+        <Grid Grid.Row="2">
+            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="نرم افزار دفترچه تلفن طلوع نسخه 1.0.0.0" Style="{DynamicResource TextBlockStyleKey}"/>
+        </Grid>
+        
+    </Grid>
+
+
+</Window>

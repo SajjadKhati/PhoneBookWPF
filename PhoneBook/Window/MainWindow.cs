@@ -108,14 +108,14 @@ namespace PhoneBook.Window
         private void SaveSuccessed(string message)
         {
             XceedNS.MessageBox.Show(message, "ذخیره ی موفقیت آمیز");
-            this.SearchAndGroupingGrid.IsEnabled = true;
+            this.SearchAndGroupingBorder.IsEnabled = true;
         }
 
 
         private void PhoneBookViewModel_AnyPersonOperationCanceled()
         {
             XceedNS.MessageBox.Show("عملیات ، لغو شد");
-            this.SearchAndGroupingGrid.IsEnabled = true;
+            this.SearchAndGroupingBorder.IsEnabled = true;
         }
 
 
@@ -197,7 +197,6 @@ namespace PhoneBook.Window
                     peopleCollectionViewSource.View.Refresh();
             }
         }
-
 
 
     }

@@ -172,6 +172,7 @@ namespace PoshtibangirTolo.View.UserControls
 
 
 
+
         #region رویدادها
 
         private void TitleBarAddControlsDockPanel_Loaded(object sender, RoutedEventArgs e)
@@ -186,13 +187,6 @@ namespace PoshtibangirTolo.View.UserControls
         }
 
         #endregion
-
-
-
-
-
-
-
 
 
     }

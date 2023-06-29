@@ -697,7 +697,8 @@
 
     <!--#region  تمپلیت برای ShapeTextButton  -->
 
-    <CustomControls:ShapeTextButton x:Key="HasValue_Converter"/>
+    <CustomControls:HasValueConverter x:Key="HasValue_Converter"/>
+
 
     <ControlTemplate x:Key="ShapeTextButtonTemplate" TargetType="{x:Type CustomControls:ShapeTextButton}">
         <Grid Name="MainGrid" Background="Transparent">
@@ -723,7 +724,10 @@
                     RenderTransform="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.RenderTransform}"
                     RenderTransformOrigin="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.RenderTransformOrigin}"
                     FlowDirection="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DefaultButtonShape.FlowDirection}"/>
-            <ContentPresenter x:Name="ContentPresenter" TextBlock.Foreground="{TemplateBinding Foreground}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+            <ContentPresenter x:Name="ContentPresenter" TextBlock.Foreground="{TemplateBinding Foreground}" 
+                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                Margin="{TemplateBinding Padding}"/>
         </Grid>
 
         <ControlTemplate.Triggers>
@@ -1539,6 +1543,80 @@
 
     
     <!--#endregion-->
+
+
+
+
+    <!--#region  تمپلیت برای  DataGridColumnHeader -->
+
+
+    <ControlTemplate x:Key="DataGridColumnHeaderControlTemplateKey" TargetType="{x:Type DataGridColumnHeader}">
+        <Grid >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Thumb x:Name="PART_LeftHeaderGripper" Grid.Column="0"
+                   Style="{DynamicResource ColumnHeaderGripperStyle}"/>
+            <Border x:Name="DataGridColumnHeaderBorder" Grid.Column="1" Background="Transparent" BorderThickness="1" 
+                    BorderBrush="Transparent" CornerRadius="2" Padding="2">
+                <StackPanel x:Name="DataGridColumnHeaderStackPanel">
+                    <Path x:Name="SortArrowPath" Margin="0, 4, 0, 0" Visibility="Hidden" Data="M0,0 L1,0 0.5,1 z" Stretch="Fill" 
+                          Width="8" Height="4" Fill="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                    <TextBlock Text="{TemplateBinding Content}" 
+                               Padding="{TemplateBinding Padding}" Margin="{TemplateBinding Margin}"/>
+                </StackPanel>
+            </Border>
+            <Thumb x:Name="PART_RightHeaderGripper" Grid.Column="2"
+                   Style="{DynamicResource ColumnHeaderGripperStyle}"/>
+        </Grid>
+
+        <ControlTemplate.Triggers>
+            <Trigger Property="SortDirection" Value="Ascending">
+                <Setter TargetName="DataGridColumnHeaderStackPanel" Property="Background" 
+                    Value="{DynamicResource DataGridColumnHeader_AscendDescendBackground }"/>
+                <Setter TargetName="SortArrowPath" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="SortArrowPath" Property="RenderTransform">
+                    <Setter.Value>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                        </TransformGroup>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+            <Trigger Property="SortDirection" Value="Descending">
+                <Setter TargetName="DataGridColumnHeaderStackPanel" Property="Background" 
+                        Value="{DynamicResource DataGridColumnHeader_AscendDescendBackground }"/>
+                <Setter TargetName="SortArrowPath" Property="Visibility" Value="Visible"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="DataGridColumnHeaderBorder" Property="BorderBrush" Value="DeepSkyBlue"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+
+    <!--#endregion-->
+
+
+
+
+    <!--#region  تمپلیت برای  DataGridRowValidationErrorControlTemplate -->
+
+    <ControlTemplate x:Key="DataGridRowValidationErrorControlTemplateKey" TargetType="{x:Type Control}">
+        <Grid Margin="7" Background="Transparent"
+              ToolTip="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGridRow}},
+                        Path=(Validation.Errors)[0].ErrorContent}">
+
+            <Ellipse VerticalAlignment="Top" StrokeThickness="0" Fill="Red" Width="{TemplateBinding FontSize}" 
+                     Height="{TemplateBinding FontSize}"/>
+        </Grid>
+    </ControlTemplate>
+
+    <!--#endregion-->
+
 
 
 

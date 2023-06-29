@@ -10,7 +10,7 @@
              x:Name="MainTitleBarUserControl">
 
     <DockPanel Name="TitleBarDockPanel" VerticalAlignment="Top"
-                MouseLeftButtonDown="TitleBarDockPanel_MouseLeftButtonDown">
+        MouseLeftButtonDown="TitleBarDockPanel_MouseLeftButtonDown">
 
         <!--  این کنترل برای رسم وکتور گرافیک یا رسم بیت مپ و آیکون استفاده میشه .  -->
         <Image DockPanel.Dock="Left"

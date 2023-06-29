@@ -91,7 +91,9 @@
     <Compile Include="PhoneBookViewModelModule\Class\PhoneBookViewModel.cs" />
     <Compile Include="PhoneBookViewModelModule\Interface\IPhoneBookViewModel.cs" />
     <Compile Include="PhoneBookViewModelModule\Interface\IPhoneBookViewModelAggregator.cs" />
-    <Compile Include="PresentationLogicModule\PresentationLogicModule.cs" />
+    <Compile Include="PresentationLogicModule\Class\PresentationLogicModule.cs" />
+    <Compile Include="PresentationLogicModule\Enum\SelectedStyle.cs" />
+    <Compile Include="PresentationLogicModule\Interface\ISettingsPresentationLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SortingModule\RowIndexComparer.cs" />
   </ItemGroup>

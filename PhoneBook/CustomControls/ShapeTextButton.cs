@@ -29,7 +29,7 @@ namespace PoshtibangirTolo.View.CustomControl
     /// 
     /// برای اینکه درون Template ها ، مشخص کنیم که اگه پروپرتی هایی که نام شون به ButtonShape ختم میشه _ و نوع Path دارن_ مقدار شون null هست یا نه _ و در صورت null بودن ، رسم ای انجام نشه _ نیاز به تبدیل کننده یا همون نیاز به پیاده سازی اینترفیس IValueConverter داریم .
     /// </summary>
-    public class ShapeTextButton : Button, IValueConverter
+    public class ShapeTextButton : Button
     {
 
         #region فیلدهای استاتیکِ DependencyProperty 
@@ -41,7 +41,10 @@ namespace PoshtibangirTolo.View.CustomControl
         ///  شناسه را برای پروپرتیِ dependency property ئه ShapeTextButton.DefaultButtonShape ، برمیگردونه .
         ///  توضیحات اضافی :
         ///  اگه بخوایم برای یه پروپرتی ای که بصورت DependencyProperty تعریف کردیم ، مقدار پیش فرض مشخص کنیم ، نباید این کار را درون متد سازنده انجام بدیم بلکه باید توسط آرگومانِ typeMetaData در متد DependencyProperty.Register این کار را انجام بدیم .
-        public static readonly DependencyProperty DefaultButtonShapeProperty = DependencyProperty.Register("DefaultButtonShape", typeof(Path), typeof(ShapeTextButton));
+        public static readonly DependencyProperty DefaultButtonShapeProperty = DependencyProperty.Register(
+            "DefaultButtonShape", typeof(Path), typeof(ShapeTextButton),
+            new PropertyMetadata(ButtonShape_PropertyChanged));
+
 
         /// <summary>
         /// dependency property مربوط به ShapeTextButton.MouseEnterButtonShape را مشخص میکند .
@@ -50,7 +53,10 @@ namespace PoshtibangirTolo.View.CustomControl
         ///  شناسه را برای پروپرتیِ dependency property ئه ShapeTextButton.MouseEnterButtonShape ، برمیگردونه .
         ///  توضیحات اضافی :
         ///  اگه بخوایم برای یه پروپرتی ای که بصورت DependencyProperty تعریف کردیم ، مقدار پیش فرض مشخص کنیم ، نباید این کار را درون متد سازنده انجام بدیم بلکه باید توسط آرگومانِ typeMetaData در متد DependencyProperty.Register این کار را انجام بدیم .
-        public static readonly DependencyProperty MouseEnterButtonShapeProperty = DependencyProperty.Register("MouseEnterButtonShape", typeof(Path), typeof(ShapeTextButton));
+        public static readonly DependencyProperty MouseEnterButtonShapeProperty = DependencyProperty.Register(
+            "MouseEnterButtonShape", typeof(Path), typeof(ShapeTextButton),
+            new PropertyMetadata(ButtonShape_PropertyChanged));
+
 
         /// <summary>
         /// dependency property مربوط به ShapeTextButton.MouseDownButtonShape را مشخص میکند .
@@ -59,7 +65,10 @@ namespace PoshtibangirTolo.View.CustomControl
         ///  شناسه را برای پروپرتیِ dependency property ئه ShapeTextButton.MouseDownButtonShape ، برمیگردونه .
         ///  توضیحات اضافی :
         ///  اگه بخوایم برای یه پروپرتی ای که بصورت DependencyProperty تعریف کردیم ، مقدار پیش فرض مشخص کنیم ، نباید این کار را درون متد سازنده انجام بدیم بلکه باید توسط آرگومانِ typeMetaData در متد DependencyProperty.Register این کار را انجام بدیم .
-        public static readonly DependencyProperty MouseDownButtonShapeProperty = DependencyProperty.Register("MouseDownButtonShape", typeof(Path), typeof(ShapeTextButton));
+        public static readonly DependencyProperty MouseDownButtonShapeProperty = DependencyProperty.Register(
+            "MouseDownButtonShape", typeof(Path), typeof(ShapeTextButton),
+            new PropertyMetadata(ButtonShape_PropertyChanged));
+
 
         /// <summary>
         /// dependency property مربوط به ShapeTextButton.ControlDisabledButtonShape را مشخص میکند .
@@ -68,35 +77,46 @@ namespace PoshtibangirTolo.View.CustomControl
         ///  شناسه را برای پروپرتیِ dependency property ئه ShapeTextButton.ControlDisabledButtonShape ، برمیگردونه .
         ///  توضیحات اضافی :
         ///  اگه بخوایم برای یه پروپرتی ای که بصورت DependencyProperty تعریف کردیم ، مقدار پیش فرض مشخص کنیم ، نباید این کار را درون متد سازنده انجام بدیم بلکه باید توسط آرگومانِ typeMetaData در متد DependencyProperty.Register این کار را انجام بدیم .
-        public static readonly DependencyProperty ControlDisabledButtonShapeProperty = DependencyProperty.Register("ControlDisabledButtonShape", typeof(Path), typeof(ShapeTextButton));
+        public static readonly DependencyProperty ControlDisabledButtonShapeProperty = DependencyProperty.Register(
+            "ControlDisabledButtonShape", typeof(Path), typeof(ShapeTextButton),
+            new PropertyMetadata(ButtonShape_PropertyChanged));
+
 
         /// <summary>
         /// dependency property مربوط به ShapeTextButton.MouseEnterContentBrush را مشخص میکند .
         /// </summary>
         /// Returns:
         ///  شناسه را برای پروپرتیِ dependency property ئه ShapeTextButton.MouseEnterContentBrush ، برمیگردونه .
-        public static readonly DependencyProperty MouseEnterContentBrushProperty = DependencyProperty.Register("MouseEnterContentBrush", typeof(Brush), typeof(ShapeTextButton));
+        public static readonly DependencyProperty MouseEnterContentBrushProperty = DependencyProperty.Register(
+            "MouseEnterContentBrush", typeof(Brush), typeof(ShapeTextButton));
+
 
         /// <summary>
         /// dependency property مربوط به ShapeTextButton.MouseDownContentBrush را مشخص میکند .
         /// </summary>
         /// Returns:
         ///  شناسه را برای پروپرتیِ dependency property ئه ShapeTextButton.MouseDownContentBrush ، برمیگردونه .
-        public static readonly DependencyProperty MouseDownContentBrushProperty = DependencyProperty.Register("MouseDownContentBrush", typeof(Brush), typeof(ShapeTextButton));
+        public static readonly DependencyProperty MouseDownContentBrushProperty = DependencyProperty.Register(
+            "MouseDownContentBrush", typeof(Brush), typeof(ShapeTextButton));
+
 
         /// <summary>
         /// dependency property مربوط به ShapeTextButton.ControlDisabledContentBrush را مشخص میکند .
         /// </summary>
         /// Returns:
         ///  شناسه را برای پروپرتیِ dependency property ئه ShapeTextButton.ControlDisabledContentBrush ، برمیگردونه .
-        public static readonly DependencyProperty ControlDisabledContentBrushProperty = DependencyProperty.Register("ControlDisabledContentBrush", typeof(Brush), typeof(ShapeTextButton));
+        public static readonly DependencyProperty ControlDisabledContentBrushProperty = DependencyProperty.Register(
+            "ControlDisabledContentBrush", typeof(Brush), typeof(ShapeTextButton));
+
 
         /// <summary>
         /// dependency property مربوط به ShapeTextButton.IsMouseLeftButtonDown را مشخص میکند .
         /// </summary>
         /// Returns:
         ///  شناسه را برای پروپرتیِ dependency property ئه ShapeTextButton.IsMouseLeftButtonDown ، برمیگردونه .
-        public static readonly DependencyProperty IsMouseLeftButtonDownProperty = DependencyProperty.Register("IsMouseLeftButtonDown", typeof(bool), typeof(ShapeTextButton));
+        public static readonly DependencyProperty IsMouseLeftButtonDownProperty = DependencyProperty.Register(
+            "IsMouseLeftButtonDown", typeof(bool), typeof(ShapeTextButton));
+
 
         /// <summary>
         /// dependency property مربوط به ShapeTextButton.GetContentBrush_ForWhichButtonShapeProperty را مشخص میکند .
@@ -104,6 +124,7 @@ namespace PoshtibangirTolo.View.CustomControl
         /// Returns:
         ///  شناسه را برای پروپرتیِ dependency property ئه ShapeTextButton.GetContentBrush_ForWhichButtonShapeProperty ، برمیگردونه .
         public static readonly DependencyProperty GetContentBrush_ForWhichButtonShapePropertyProperty = DependencyProperty.Register("GetContentBrush_ForWhichButtonShapeProperty", typeof(ButtonShapeProperty), typeof(ShapeTextButton), new PropertyMetadata(ButtonShapeProperty.None));
+
 
         #endregion
 
@@ -276,6 +297,52 @@ namespace PoshtibangirTolo.View.CustomControl
 
         #region متدها
 
+
+        /// <summary>
+        /// این متد ، بعد از تغییر مقدار Dependency Property ، اجرا میشود .
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void ButtonShape_PropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(d as ShapeTextButton, e.NewValue as Path, e.OldValue as Path);
+        }
+
+
+        /// <summary>
+        /// بعد از تغییر مقدار Dependency Property ، این متد اجرا میشود و Parent ئه شی Path ئه مربوط به Dependency Property را به شیِ جاریِ ShapeTextButton
+        /// تغییر میدهد تا وقتی Binding ای در شیِ Path بصورت FindAnsestor به شیِ ShapeTextButton انجام شد ، آن Binding ، درست کار کند وگرنه کار نمیکند .
+        ///
+        /// چون وقتی Binding ای بصورت FindAnsestor برای شی والد انجام میشود ، در درخت منطقی یا همان پروپرتی Parent در آن شی ، شروع به جستجو میکند .
+        /// </summary>
+        /// <param name="shapeTextButton"></param>
+        /// <param name="newButtonShape"></param>
+        /// <param name="oldButtonShape"></param>
+        private static void OnPropertyChanged(ShapeTextButton shapeTextButton, Path newButtonShape,
+            Path oldButtonShape)
+        {
+            try
+            {
+                if (oldButtonShape != null && shapeTextButton != null && oldButtonShape.Parent == shapeTextButton)
+                {
+                    shapeTextButton.RemoveLogicalChild(oldButtonShape);
+                }
+
+                if (newButtonShape != null && shapeTextButton != null && newButtonShape.Parent == null)
+                {
+                    /// وقتی فرزند منطقی ای را به شیِ shapeTextButton اضافه کنیم ،
+                    /// باعث میشود تا پروپرتیِ Parent ئه newButtonShape ، به شیِ shapeTextButton تغییر کند .
+                    shapeTextButton.AddLogicalChild(newButtonShape);
+                }
+            }
+            catch (Exception exception)
+            {
+            }
+        }
+
+
+
+
         /// <summary>
         /// برای مقداردهی پروپرتی IsMouseLeftButtonDown ، از این متد استفاده میکنیم .
         /// </summary>
@@ -297,37 +364,8 @@ namespace PoshtibangirTolo.View.CustomControl
         }
 
 
-
-
-        /// <summary>
-        /// متد پیاده سازی شده از اینترفیس IValueConverter برای تبدیل _ تبدیل Source Type یا Target Type و ... به هر نوع دلخواه
-        /// برای اینکه بدونیم پروپرتی هایی که با نام ButtonShape ختم میشن _ و در این کلاس وجود دارن و از نوع Path هستن _ ، چک کنیم که در Template ها مقدار دارن یا نه ، از تبدیل کننده ها استفاده میکنیم
-        /// </summary>
-        /// <param name="value">مقدار Source Type که همون مقدار پروپرتی ای هست که در زمان Binding اش از Converter استفاده کرده بودیم . در این مثال ، برای پروپرتی هایی که با نام ButtonShape ختم میشن ، از Converter استفاده میکنیم . بنابراین پارامتر value همون مقادیرِ این پروپرتی که از نوع Path هستند ، خواهند بود .</param>
-        /// <param name="targetType"></param>
-        /// <param name="parameter"></param>
-        /// <param name="culture"></param>
-        /// <returns>مقدار بازگشتی در اینجا ، نوع bool هست که مشخص میکنه که مقدار پارامتر value _ همون مقدار پروپرتی هایی که با ButtonShape ختم میشن _ مقدار داره یا نه . تا در صورت مقدار نداشتن این پروپرتی ها ، در Template ها ، رسم ای برای اونها انجام نشه .</returns>
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            // مقدار بازگشتی در اینجا ، نوع bool هست که مشخص میکنه که مقدار پارامتر value _ همون مقدار پروپرتی هایی که با ButtonShape ختم میشن _ مقدار داره یا نه . تا در صورت مقدار نداشتن این پروپرتی ها ، در Template ها ، رسم ای برای اونها انجام نشه .
-            return value != null;
-        }
-
-        /// <summary>
-        /// برعکس متد Convert هست . در اینجا ، به این متد نیازی نداریم .
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="targetType"></param>
-        /// <param name="parameter"></param>
-        /// <param name="culture"></param>
-        /// <returns></returns>
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
-
         #endregion
+
 
     }
 }

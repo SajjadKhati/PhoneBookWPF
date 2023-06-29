@@ -1,4 +1,5 @@
 ﻿using PhoneBook.VisualElementModule;
+using PoshtibangirTolo.View.CustomControl;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,6 +63,9 @@ namespace PhoneBook.Window
         }
 
 
+        public int SelectedStyleIndex{ get; set; }
+
+
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -80,11 +84,12 @@ namespace PhoneBook.Window
 
             this.InitializeViewModelsModules();
 
-            this._personValidationRule = this.Resources["PersonValidationRuleKey"] as PersonValidationRule;
+            this._personValidationRule = Application.Current.Resources["PersonValidationRuleKey"] as PersonValidationRule;
             if (this._personValidationRule != null)
                 this._personValidationRule.PhoneBookViewModel = this.PhoneBookViewModel;
 
-            this._collectionViewOperations = this.Resources["CollectionViewOperationsKey"] as ICollectionViewOperationsAggregator;
+            this._collectionViewOperations = Application.Current.Resources["CollectionViewOperationsKey"] 
+                as ICollectionViewOperationsAggregator;
         }
 
 
@@ -93,12 +98,16 @@ namespace PhoneBook.Window
         private async void PhoneBookWindow_Loaded(object sender, RoutedEventArgs e)
         {
             await this.PhoneBookViewModel.LoadPhoneBookAsyncCommand.ExecuteAsync(null);
+
+            (double centerX, double centerY) centerPoint = PresentationLogicModule.GetWindowCenterPoint(this.Width, this.Height);
+            this.Left = centerPoint.centerX;
+            this.Top = centerPoint.centerY;
         }
 
 
         private void PhoneBookDataGrid_BeginningEdit(object sender, DataGridBeginningEditEventArgs e)
         {
-            this.SearchAndGroupingGrid.IsEnabled = false;
+            this.SearchAndGroupingBorder.IsEnabled = false;
         }
 
 
@@ -270,22 +279,54 @@ namespace PhoneBook.Window
         }
 
 
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            ShapeTextButton currentButton = sender as ShapeTextButton;
+            if (currentButton == null)
+                return;
+
+            currentButton.Visibility = Visibility.Collapsed;
+            this.SearchAndGroupingBorder.Visibility = Visibility.Visible;
+            this.CollapseButton.Visibility = Visibility.Visible;
+        }
+
+
+        private void CollapseButton_Click(object sender, RoutedEventArgs e)
+        {
+            ShapeTextButton currentButton = sender as ShapeTextButton;
+            if (currentButton == null)
+                return;
+
+            currentButton.Visibility = Visibility.Collapsed;
+            this.SearchAndGroupingBorder.Visibility = Visibility.Collapsed;
+            this.SearchButton.Visibility = Visibility.Visible;
+        }
+
+
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+
+        private void SettingButton_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsWindow settingsWindow = new SettingsWindow(this) {Owner = this};
+            settingsWindow.ShowDialog();
+        }
+
+
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             if (PropertyChanged != null)
                 this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-
 
 
     }
